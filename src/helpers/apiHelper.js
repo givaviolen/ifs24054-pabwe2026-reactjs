@@ -1,19 +1,34 @@
+const TOKEN_KEY = "accessToken";
+
 export const getAccessToken = () => {
-  return localStorage.getItem("accessToken");
+  return localStorage.getItem(TOKEN_KEY);
 };
 
 export const putAccessToken = (token) => {
-  localStorage.setItem("accessToken", token);
+  localStorage.setItem(TOKEN_KEY, token);
+};
+
+const buildQuery = (params = {}) => {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if ((value ?? "") !== "") {
+      searchParams.append(key, value);
+    }
+  });
+
+  const query = searchParams.toString();
+  return query ? `?${query}` : "";
 };
 
 export const fetchWithToken = async (endpoint, options = {}) => {
+  const { params, headers: customHeaders, ...fetchOptions } = options;
   const token = getAccessToken();
-  const headers = { ...options.headers };
+  const headers = { ...customHeaders };
 
-  // Jangan paksa application/json jika body adalah FormData (misal untuk upload file)
-  if (options.body && !(options.body instanceof FormData)) {
-    headers["Content-Type"] = "application/json";
-  } else if (!options.body) {
+  // FormData (upload cover/foto) harus dikirim tanpa Content-Type manual
+  // agar browser menambahkan boundary multipart/form-data secara otomatis.
+  if (!(fetchOptions.body instanceof FormData)) {
     headers["Content-Type"] = "application/json";
   }
 
@@ -21,17 +36,10 @@ export const fetchWithToken = async (endpoint, options = {}) => {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  // Handle query params
-  let url = `${DELCOM_BASEURL}${endpoint}`;
-  if (options.params) {
-    const query = new URLSearchParams(options.params).toString();
-    url += `?${query}`;
-  }
-
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const response = await fetch(
+    `${DELCOM_BASEURL}${endpoint}${buildQuery(params)}`,
+    { ...fetchOptions, headers }
+  );
 
   const responseJson = await response.json();
 

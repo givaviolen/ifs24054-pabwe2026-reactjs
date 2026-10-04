@@ -1,107 +1,133 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getAccessToken, putAccessToken, fetchWithToken } from "./apiHelper";
+import {
+  getAccessToken,
+  putAccessToken,
+  fetchWithToken,
+} from "./apiHelper";
+
+const mockResponse = (body, ok = true) => ({
+  ok,
+  json: () => Promise.resolve(body),
+});
 
 describe("apiHelper", () => {
   beforeEach(() => {
-    vi.stubGlobal("localStorage", {
-      getItem: vi.fn(),
-      setItem: vi.fn(),
-    });
-    vi.stubGlobal("fetch", vi.fn());
+    localStorage.clear();
+    globalThis.fetch = vi.fn();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it("should get access token from localStorage", () => {
-    vi.mocked(localStorage.getItem).mockReturnValue("fake-token");
-    const token = getAccessToken();
-    expect(localStorage.getItem).toHaveBeenCalledWith("accessToken");
-    expect(token).toBe("fake-token");
-  });
+  describe("token storage", () => {
+    it("menyimpan dan mengambil token dari localStorage", () => {
+      putAccessToken("abc123");
+      expect(getAccessToken()).toBe("abc123");
+    });
 
-  it("should put access token to localStorage", () => {
-    putAccessToken("new-token");
-    expect(localStorage.setItem).toHaveBeenCalledWith("accessToken", "new-token");
+    it("mengembalikan null jika token belum ada", () => {
+      expect(getAccessToken()).toBeNull();
+    });
   });
 
   describe("fetchWithToken", () => {
-    it("should include Authorization header if token exists", async () => {
-      vi.mocked(localStorage.getItem).mockReturnValue("fake-token");
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: true }),
-      });
+    it("memanggil URL dasar + endpoint tanpa Authorization jika tidak ada token", async () => {
+      fetch.mockResolvedValue(mockResponse({ status: "success" }));
 
-      await fetchWithToken("/test-endpoint");
+      const result = await fetchWithToken("/lost-founds");
 
-      expect(fetch).toHaveBeenCalledWith(
-        "https://open-api.delcom.org/api/v1/test-endpoint",
-        expect.objectContaining({
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer fake-token",
-          },
-        })
+      expect(result).toEqual({ status: "success" });
+      const [url, init] = fetch.mock.calls[0];
+      expect(url).toBe(`${DELCOM_BASEURL}/lost-founds`);
+      expect(init.headers["Content-Type"]).toBe("application/json");
+      expect(init.headers.Authorization).toBeUndefined();
+    });
+
+    it("menambahkan header Authorization Bearer jika token tersedia", async () => {
+      putAccessToken("token-xyz");
+      fetch.mockResolvedValue(mockResponse({ status: "success" }));
+
+      await fetchWithToken("/users/me");
+
+      expect(fetch.mock.calls[0][1].headers.Authorization).toBe(
+        "Bearer token-xyz"
       );
     });
 
-    it("should omit Content-Type if body is FormData", async () => {
-      vi.mocked(localStorage.getItem).mockReturnValue(null);
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: true }),
+    it("menyusun query params dan mengabaikan nilai kosong", async () => {
+      fetch.mockResolvedValue(mockResponse({ status: "success" }));
+
+      await fetchWithToken("/lost-founds", {
+        params: {
+          status: "lost",
+          is_completed: 0,
+          is_me: "",
+          keyword: undefined,
+          other: null,
+        },
       });
 
+      expect(fetch.mock.calls[0][0]).toBe(
+        `${DELCOM_BASEURL}/lost-founds?status=lost&is_completed=0`
+      );
+    });
+
+    it("tidak menambahkan tanda tanya jika semua params kosong", async () => {
+      fetch.mockResolvedValue(mockResponse({ status: "success" }));
+
+      await fetchWithToken("/lost-founds", { params: { is_me: "" } });
+
+      expect(fetch.mock.calls[0][0]).toBe(`${DELCOM_BASEURL}/lost-founds`);
+    });
+
+    it("mengirim method dan body JSON serta menggabungkan header kustom", async () => {
+      fetch.mockResolvedValue(mockResponse({ status: "success" }));
+
+      await fetchWithToken("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email: "a@b.c" }),
+        headers: { "X-Custom": "1" },
+      });
+
+      const init = fetch.mock.calls[0][1];
+      expect(init.method).toBe("POST");
+      expect(init.body).toBe(JSON.stringify({ email: "a@b.c" }));
+      expect(init.headers["X-Custom"]).toBe("1");
+      expect(init.headers["Content-Type"]).toBe("application/json");
+    });
+
+    it("tidak memaksa Content-Type saat body adalah FormData", async () => {
+      fetch.mockResolvedValue(mockResponse({ status: "success" }));
       const formData = new FormData();
-      formData.append("file", "test");
+      formData.append("cover", new Blob(["x"]), "cover.png");
 
-      await fetchWithToken("/upload", { body: formData });
+      await fetchWithToken("/lost-founds/1/cover", {
+        method: "POST",
+        body: formData,
+      });
 
-      expect(fetch).toHaveBeenCalledWith(
-        "https://open-api.delcom.org/api/v1/upload",
-        expect.objectContaining({
-          headers: {},
-        })
+      const init = fetch.mock.calls[0][1];
+      expect(init.body).toBe(formData);
+      expect(init.headers["Content-Type"]).toBeUndefined();
+    });
+
+    it("melempar Error dengan pesan dari server saat respons gagal", async () => {
+      fetch.mockResolvedValue(
+        mockResponse({ status: "fail", message: "Data tidak valid" }, false)
+      );
+
+      await expect(fetchWithToken("/auth/login")).rejects.toThrow(
+        "Data tidak valid"
       );
     });
 
-    it("should handle query params correctly", async () => {
-      vi.mocked(localStorage.getItem).mockReturnValue(null);
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: true }),
-      });
+    it("melempar Error pesan bawaan jika server tidak mengirim message", async () => {
+      fetch.mockResolvedValue(mockResponse({}, false));
 
-      await fetchWithToken("/data", { params: { status: "lost", is_me: 1 } });
-
-      expect(fetch).toHaveBeenCalledWith(
-        "https://open-api.delcom.org/api/v1/data?status=lost&is_me=1",
-        expect.objectContaining({
-          headers: { "Content-Type": "application/json" },
-        })
+      await expect(fetchWithToken("/auth/login")).rejects.toThrow(
+        "Something went wrong"
       );
-    });
-
-    it("should throw error if response is not ok", async () => {
-      vi.mocked(localStorage.getItem).mockReturnValue(null);
-      vi.mocked(fetch).mockResolvedValue({
-        ok: false,
-        json: async () => ({ message: "Not Found" }),
-      });
-
-      await expect(fetchWithToken("/error")).rejects.toThrow("Not Found");
-    });
-    
-    it("should throw default error if message is not provided", async () => {
-      vi.mocked(localStorage.getItem).mockReturnValue(null);
-      vi.mocked(fetch).mockResolvedValue({
-        ok: false,
-        json: async () => ({}),
-      });
-
-      await expect(fetchWithToken("/error")).rejects.toThrow("Something went wrong");
     });
   });
 });
