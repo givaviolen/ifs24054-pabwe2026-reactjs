@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
     server: { port: Number(env.APP_PORT) || 5173 },
+    preview: { port: Number(env.APP_PORT) || 5173 },
     define: {
       DELCOM_BASEURL: JSON.stringify(
         env.DELCOM_BASEURL || "https://open-api.delcom.org/api/v1"
@@ -20,6 +21,14 @@ export default defineConfig(({ mode }) => {
       coverage: {
         provider: "v8",
         reporter: ["text", "html"],
+        include: ["src/**/*.{js,jsx,ts,tsx}"],
+        exclude: [
+          "src/main.jsx",
+          "src/setupTests.js",
+          "src/test-utils.jsx",
+          "**/*.test.{js,jsx}",
+          "node_modules/**",
+        ],
         thresholds: { lines: 100, functions: 100, branches: 100, statements: 100 },
       },
     },

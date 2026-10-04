@@ -8,16 +8,27 @@ export const putAccessToken = (token) => {
 
 export const fetchWithToken = async (endpoint, options = {}) => {
   const token = getAccessToken();
-  const headers = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
+  const headers = { ...options.headers };
+
+  // Jangan paksa application/json jika body adalah FormData (misal untuk upload file)
+  if (options.body && !(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  } else if (!options.body) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${DELCOM_BASEURL}${endpoint}`, {
+  // Handle query params
+  let url = `${DELCOM_BASEURL}${endpoint}`;
+  if (options.params) {
+    const query = new URLSearchParams(options.params).toString();
+    url += `?${query}`;
+  }
+
+  const response = await fetch(url, {
     ...options,
     headers,
   });
