@@ -43,11 +43,11 @@ export default function SidebarComponent({ open, onClose }) {
       >
         <div className="mb-10 flex items-center justify-between">
           <Link to="/" onClick={onClose} className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-2xl bg-teal-600 text-white shadow-sm shadow-teal-600/30">
+            <span className="grid size-10 place-items-center rounded-2xl bg-teal-700 text-white shadow-sm shadow-teal-600/30">
               <IconMapPinSearch size={22} />
             </span>
             <span className="font-sans text-xl font-bold tracking-tight text-slate-800">
-              Temu<span className="text-teal-600">Balik</span>
+              Temu<span className="text-teal-700">Balik</span>
             </span>
           </Link>
           <button

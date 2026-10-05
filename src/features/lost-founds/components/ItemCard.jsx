@@ -7,7 +7,7 @@ export const StatusPill = ({ status }) => (
   <span
     className={clsx(
       "rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide",
-      status === "lost" ? "bg-rose-50 text-rose-600 ring-1 ring-rose-600/20" : "bg-teal-50 text-teal-600 ring-1 ring-teal-600/20",
+      status === "lost" ? "bg-rose-50 text-rose-600 ring-1 ring-rose-600/20" : "bg-teal-50 text-teal-700 ring-1 ring-teal-600/20",
     )}
   >
     {status === "lost" ? "Hilang" : "Ditemukan"}

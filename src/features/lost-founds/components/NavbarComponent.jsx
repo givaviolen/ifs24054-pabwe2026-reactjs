@@ -33,8 +33,8 @@ export default function NavbarComponent({ onOpenMenu }) {
           <h1 className="text-base font-bold leading-tight text-slate-900 sm:text-lg">
             Pusat Lost &amp; Found
           </h1>
-          <p className="flex items-center gap-1.5 text-xs font-semibold text-teal-600">
-            <span className="size-2 rounded-full bg-teal-500" />
+          <p className="flex items-center gap-1.5 text-xs font-semibold text-teal-700">
+            <span className="size-2 rounded-full bg-teal-700" />
             Sesi aktif
           </p>
         </div>

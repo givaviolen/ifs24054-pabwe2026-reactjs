@@ -25,25 +25,25 @@ beforeEach(() => {
 });
 
 describe("App routing", () => {
-  it("tamu yang membuka / diarahkan ke halaman login", () => {
+  it("tamu yang membuka / diarahkan ke halaman login", async () => {
     renderWithProviders(<App />);
-    expect(screen.getByRole("heading", { name: "Masuk" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Masuk" })).toBeInTheDocument();
   });
 
-  it("/auth otomatis ke /auth/login", () => {
+  it("/auth otomatis ke /auth/login", async () => {
     renderWithProviders(<App />, { route: "/auth" });
-    expect(screen.getByRole("heading", { name: "Masuk" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Masuk" })).toBeInTheDocument();
   });
 
-  it("/auth/register menampilkan form pendaftaran", () => {
+  it("/auth/register menampilkan form pendaftaran", async () => {
     renderWithProviders(<App />, { route: "/auth/register" });
-    expect(screen.getByRole("heading", { name: "Buat akun" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Buat akun" })).toBeInTheDocument();
   });
 
   it("pengguna login melihat dashboard di /", async () => {
     renderWithProviders(<App />, { preloadedState: signedIn() });
     expect(await screen.findByText("Jam tangan")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Daftar laporan" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Daftar laporan" })).toBeInTheDocument();
   });
 
   it("pengguna login yang membuka /auth dilempar ke dashboard", async () => {

@@ -111,11 +111,11 @@ export default function RegisterPage() {
           id="register-submit-button"
           type="submit"
           disabled={submitting}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-teal-700 hover:shadow disabled:opacity-70"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-teal-800 hover:shadow disabled:opacity-70"
         >
           {submitting ? (
             <>
-              <IconLoader2 size={20} className="animate-spin" /> Memprosesâ€¦
+              <IconLoader2 size={20} className="animate-spin" /> MemprosesÃ¢â‚¬Â¦
             </>
           ) : (
             <>
@@ -127,7 +127,7 @@ export default function RegisterPage() {
 
       <p className="mt-8 text-center text-sm font-medium text-slate-500 lg:text-left">
         Sudah punya akun?{" "}
-        <Link to="/auth/login" className="text-teal-600 hover:text-teal-700 hover:underline">
+        <Link to="/auth/login" className="text-teal-700 underline hover:text-teal-800">
           Masuk di sini
         </Link>
       </p>
