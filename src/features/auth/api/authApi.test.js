@@ -1,29 +1,16 @@
-import { describe, it, expect, vi } from "vitest";
-import { loginUser, registerUser } from "./authApi";
-import { fetchWithToken } from "../../../helpers/apiHelper";
+import { beforeEach, expect, it, vi } from "vitest";
+import { postLogin, postRegister } from "./authApi";
+import { callApi } from "../../../helpers/apiHelper";
 
-vi.mock("../../../helpers/apiHelper", () => ({
-  fetchWithToken: vi.fn(),
-}));
+vi.mock("../../../helpers/apiHelper", () => ({ callApi: vi.fn().mockResolvedValue({ ok: true }) }));
+beforeEach(() => vi.clearAllMocks());
 
-describe("authApi", () => {
-  it("should login user", async () => {
-    vi.mocked(fetchWithToken).mockResolvedValue({ token: "abc" });
-    const res = await loginUser({ email: "a@b.com", password: "123" });
-    expect(fetchWithToken).toHaveBeenCalledWith("/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email: "a@b.com", password: "123" }),
-    });
-    expect(res).toEqual({ token: "abc" });
-  });
+it("postRegister -> POST /auth/register", async () => {
+  await postRegister({ name: "a" });
+  expect(callApi).toHaveBeenCalledWith("/auth/register", { method: "POST", body: { name: "a" } });
+});
 
-  it("should register user", async () => {
-    vi.mocked(fetchWithToken).mockResolvedValue({ message: "ok" });
-    const res = await registerUser({ name: "A", email: "a@b.com", password: "123" });
-    expect(fetchWithToken).toHaveBeenCalledWith("/auth/register", {
-      method: "POST",
-      body: JSON.stringify({ name: "A", email: "a@b.com", password: "123" }),
-    });
-    expect(res).toEqual({ message: "ok" });
-  });
+it("postLogin -> POST /auth/login", async () => {
+  await postLogin({ email: "a" });
+  expect(callApi).toHaveBeenCalledWith("/auth/login", { method: "POST", body: { email: "a" } });
 });

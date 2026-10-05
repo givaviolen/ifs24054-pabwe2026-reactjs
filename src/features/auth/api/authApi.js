@@ -1,15 +1,4 @@
-import { fetchWithToken } from "../../../helpers/apiHelper";
+import { callApi } from "../../../helpers/apiHelper";
 
-export const loginUser = async ({ email, password }) => {
-  return await fetchWithToken("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  });
-};
-
-export const registerUser = async ({ name, email, password }) => {
-  return await fetchWithToken("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ name, email, password }),
-  });
-};
+export const postRegister = (payload) => callApi("/auth/register", { method: "POST", body: payload });
+export const postLogin = (payload) => callApi("/auth/login", { method: "POST", body: payload });

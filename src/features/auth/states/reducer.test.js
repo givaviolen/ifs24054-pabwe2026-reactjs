@@ -1,42 +1,21 @@
-import { describe, it, expect } from "vitest";
-import authReducer, { logout } from "./reducer";
-import { asyncLoginUser, asyncRegisterUser } from "./action";
+import { expect, it } from "vitest";
+import reducer, { isAuthLogin, isAuthLogout, isAuthRegister } from "./reducer";
+import { putAccessToken } from "../../../helpers/apiHelper";
 
-describe("authReducer", () => {
-  const initialState = { isAuthLogin: false, isAuthRegister: false };
+it("state awal membaca token dari localStorage", () => {
+  putAccessToken("tersimpan");
+  expect(reducer(undefined, { type: "@@init" })).toEqual({ token: "tersimpan", registered: false });
+});
 
-  it("should return initial state", () => {
-    expect(authReducer(undefined, { type: "unknown" })).toEqual(initialState);
-  });
+it("isAuthLogin menyimpan token", () => {
+  const state = reducer({ token: null, registered: true }, isAuthLogin("t1"));
+  expect(state).toEqual({ token: "t1", registered: false });
+});
 
-  it("should handle logout", () => {
-    const state = authReducer({ isAuthLogin: true, isAuthRegister: false }, logout());
-    expect(state.isAuthLogin).toBe(false);
-  });
+it("isAuthRegister menandai pendaftaran berhasil", () => {
+  expect(reducer({ token: null, registered: false }, isAuthRegister()).registered).toBe(true);
+});
 
-  it("should handle asyncLoginUser.pending", () => {
-    const state = authReducer(initialState, asyncLoginUser.pending());
-    expect(state.isAuthLogin).toBe(true);
-  });
-  it("should handle asyncLoginUser.fulfilled", () => {
-    const state = authReducer({ isAuthLogin: true }, asyncLoginUser.fulfilled());
-    expect(state.isAuthLogin).toBe(false);
-  });
-  it("should handle asyncLoginUser.rejected", () => {
-    const state = authReducer({ isAuthLogin: true }, asyncLoginUser.rejected());
-    expect(state.isAuthLogin).toBe(false);
-  });
-
-  it("should handle asyncRegisterUser.pending", () => {
-    const state = authReducer(initialState, asyncRegisterUser.pending());
-    expect(state.isAuthRegister).toBe(true);
-  });
-  it("should handle asyncRegisterUser.fulfilled", () => {
-    const state = authReducer({ isAuthRegister: true }, asyncRegisterUser.fulfilled());
-    expect(state.isAuthRegister).toBe(false);
-  });
-  it("should handle asyncRegisterUser.rejected", () => {
-    const state = authReducer({ isAuthRegister: true }, asyncRegisterUser.rejected());
-    expect(state.isAuthRegister).toBe(false);
-  });
+it("isAuthLogout mengosongkan sesi", () => {
+  expect(reducer({ token: "x", registered: true }, isAuthLogout())).toEqual({ token: null, registered: false });
 });

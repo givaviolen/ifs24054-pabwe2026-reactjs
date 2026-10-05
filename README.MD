@@ -1,454 +1,334 @@
-# ifs24054-pabwe2026-reactjs
+# 🔎 Lost & Founds — ReactJS
 
-Praktik Framework JS: ReactJS & NextJS (pabwe-2026-p4)
+Aplikasi web **Lost & Founds** untuk melaporkan, mencari, dan mengelola barang hilang maupun barang temuan. Dibangun dengan **ReactJS (JavaScript)**, **Redux Toolkit**, dan **Tailwind CSS v4**, serta menggunakan **Delcom Open API** sebagai sumber data.
 
-Berkas pendukung praktikum (`src-latihan-p4.zip`) dapat diunduh dari: https://github.com/auxtern/itdel-praktikum/tree/main/pabwe/2026
+> Nama repositori: `{username}-pabwer2026-reactjs` (contoh: `ifs18005-pabwer2026-reactjs`)
 
-## A. Bahan Bacaan
+![React](https://img.shields.io/badge/React-JavaScript-61DAFB?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-Build_Tool-646CFF?logo=vite&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-Runtime-000000?logo=bun&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)
+![Redux](https://img.shields.io/badge/Redux_Toolkit-State-764ABC?logo=redux&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-Testing-6E9F18?logo=vitest&logoColor=white)
 
-### 1.1 ReactJS
+---
 
-Pelajari ReactJS dari halaman berikut: https://react.dev/learn
+## 📑 Daftar Isi
 
-## B. Latihan
+- [Tentang Proyek](#-tentang-proyek)
+- [Fitur Utama](#-fitur-utama)
+- [Teknologi](#-teknologi)
+- [Struktur Proyek](#-struktur-proyek)
+- [Memulai](#-memulai)
+- [Konfigurasi Environment](#-konfigurasi-environment)
+- [Skrip yang Tersedia](#-skrip-yang-tersedia)
+- [Arsitektur & Modul](#-arsitektur--modul)
+- [Daftar Rute](#-daftar-rute)
+- [Endpoint API](#-endpoint-api)
+- [Pengujian](#-pengujian)
+- [Catatan Penamaan](#-catatan-penamaan)
 
-### 2.1 ReactJS (JavaScript)
+---
 
-#### 2.1.1 Konfigurasi
+## 📖 Tentang Proyek
 
-1. Buat workspace VSCode baru dengan format penamaan `{username}-pabwe2026-p4`. Contoh: `abdullah_ubaid-pabwe2026-p4` atau `ifs18005-pabwe2026-p4`.
-2. Buka terminal dan jalankan perintah `bun init`. Pada pilihan `project template` pilih `Blank`.
-3. Modifikasi isi file `package.json`, seperti berikut (pada bagian `"name": "abdullah_ubaid-pabwe2026-p4"` ganti dengan username kamu):
+Aplikasi ini memungkinkan pengguna untuk:
 
-```json
-{
-  "name": "ifs18005-pabwe2026-p4",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
-  },
-  "dependencies": {
-    "@reduxjs/toolkit": "^2.12.0",
-    "@tabler/icons-react": "^3.48.0",
-    "clsx": "^2.1.1",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "react-redux": "^9.3.0",
-    "react-router-dom": "^7.18.4",
-    "sweetalert2": "^11.26.25",
-    "tailwind-merge": "^3.7.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.3",
-    "@testing-library/user-event": "^14.6.7",
-    "@vitejs/plugin-react": "^6.1.1",
-    "@vitest/coverage-v8": "^5.0.2",
-    "jsdom": "^30.1.1",
-    "tailwindcss": "^4.3.3",
-    "vite": "^8.3.1",
-    "vitest": "^5.0.2"
-  }
-}
+- Membuat laporan **barang hilang** atau **barang ditemukan**.
+- Memantau status penyelesaian laporan.
+- Melihat statistik harian dan bulanan.
+- Mengelola profil dan melihat daftar pengguna lain.
+
+Seluruh data diambil dari REST API berikut:
+👉 [https://open-api.delcom.org/docs/1.0/api-lost-founds](https://open-api.delcom.org/docs/1.0/api-lost-founds)
+
+**Base URL API:** `https://open-api.delcom.org/api/v1`
+
+---
+
+## ✨ Fitur Utama
+
+### 🔐 Autentikasi
+- Login dan registrasi akun dengan validasi form.
+- Penyimpanan token di `localStorage` dan otomatisasi header `Authorization: Bearer <token>`.
+- Pengalihan otomatis jika pengguna sudah/belum terautentikasi.
+
+### 📦 Lost & Founds
+- Daftar laporan dengan filter **status** (`lost` / `found`), **penyelesaian** (`is_completed`), dan **kepemilikan** (`is_me`).
+- **Live search** berdasarkan kata kunci.
+- Dashboard ringkasan: *Total*, *Barang Hilang*, *Barang Ditemukan*, dan *Selesai*.
+- Tambah, ubah, dan hapus laporan.
+- Unggah/ganti foto cover dengan **pratinjau langsung**.
+- Halaman detail lengkap (foto cover, pelapor, status, tanggal, deskripsi).
+- Statistik harian dan bulanan.
+
+### 👤 Pengguna & Profil
+- Daftar seluruh pengguna sistem.
+- Ubah informasi profil, unggah foto avatar, dan ganti kata sandi.
+
+### 🎨 UI/UX
+- Desain responsif dengan **Tailwind CSS v4**.
+- Sidebar berbentuk *drawer* pada perangkat mobile.
+- Dialog notifikasi interaktif dengan **SweetAlert2**.
+- Tipografi menggunakan **Google Fonts** (Plus Jakarta Sans / Inter).
+
+---
+
+## 🛠 Teknologi
+
+| Kategori | Teknologi |
+|---|---|
+| Runtime & Package Manager | [Bun](https://bun.sh) |
+| Framework UI | [React](https://react.dev) (JavaScript) |
+| Build Tool | [Vite](https://vite.dev) |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com) (`@tailwindcss/vite`) |
+| Ikon | `react-icons` / `tabler-icons` |
+| State Management | [Redux Toolkit](https://redux-toolkit.js.org) + `react-redux` |
+| Routing | `react-router-dom` |
+| Notifikasi | [SweetAlert2](https://sweetalert2.github.io) |
+| Pengujian | [Vitest](https://vitest.dev), jsdom, Testing Library |
+
+---
+
+## 📁 Struktur Proyek
+
+```
+{username}-pabwer2026-reactjs/
+├── index.html                  # Entry HTML + konfigurasi Google Fonts
+├── vite.config.js              # Port, DELCOM_BASEURL, Vitest & coverage
+├── .env                        # Konfigurasi lokal (jangan di-commit)
+├── .env.example                # Contoh konfigurasi environment
+└── src/
+    ├── main.jsx                # Provider (Redux) + BrowserRouter
+    ├── App.jsx                 # Deklarasi rute & route guarding
+    ├── store.js                # Redux store terpusat
+    ├── setupTests.js           # Setup Vitest + jest-dom
+    ├── test-utils.jsx          # renderWithProviders
+    │
+    ├── helpers/
+    │   ├── apiHelper.js        # Wrapper fetch, token, query params
+    │   └── toolsHelper.js      # SweetAlert2 dialogs, formatDate
+    │
+    ├── hooks/
+    │   └── useInput.js         # Custom hook form input
+    │
+    └── features/
+        ├── auth/
+        │   ├── api/authApi.js
+        │   ├── states/         # actions, thunks, reducers
+        │   ├── layouts/AuthLayout.jsx
+        │   └── pages/          # LoginPage, RegisterPage
+        │
+        ├── users/
+        │   ├── api/userApi.js
+        │   ├── states/
+        │   └── pages/          # UsersPage, ProfilePage
+        │
+        └── lost-founds/
+            ├── api/lostFoundApi.js
+            ├── states/
+            ├── layouts/LostFoundLayout.jsx
+            ├── components/     # NavbarComponent, SidebarComponent
+            ├── modals/         # AddModal, ChangeModal, ChangeCoverModal
+            └── pages/          # HomePage, DetailPage
 ```
 
-4. Buka terminal dan jalankan perintah `bun install`.
-5. Hapus file `index.ts` dan `tsconfig.json`.
-6. Tambahkan file `.env`, `.env.example`, `index.html` dan `vite.config.js`.
-7. Modifikasi isi file `.env`, seperti berikut:
+---
 
-```env
-VITE_DELCOM_BASEURL=https://open-api.delcom.org/api/v1
-APP_PORT=3000
-```
+## 🚀 Memulai
 
-8. Modifikasi isi file `.env.example`, seperti berikut:
+### Prasyarat
 
-```env
-VITE_DELCOM_BASEURL=http://localhost:8000/api/v1
-APP_PORT=3000
-```
+- [Bun](https://bun.sh) terbaru
+- Git
 
-9. Modifikasi isi file `index.html`, seperti berikut:
-
-```html
-<!doctype html>
-<html lang="id">
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Delcom Todo</title>
-  <!-- Google Fonts: Plus Jakarta Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
-    rel="stylesheet" />
-</head>
-
-<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen">
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-
-</html>
-```
-
-10. Modifikasi isi file `vite.config.js`, seperti berikut:
-
-```js
-import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-import process from "process";
-
-// https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
-
-  return {
-    plugins: [react(), tailwindcss()],
-    server: {
-      port: Number(env.APP_PORT) || 3000,
-    },
-    preview: {
-      port: Number(env.APP_PORT) || 3000,
-    },
-    define: {
-      DELCOM_BASEURL: JSON.stringify(
-        env.VITE_DELCOM_BASEURL || "https://open-api.delcom.org/api/v1"
-      ),
-    },
-    test: {
-      globals: true,
-      environment: "jsdom",
-      setupFiles: "./src/setupTests.js",
-      coverage: {
-        provider: "v8",
-        reporter: ["text", "json", "html", "lcov"],
-        include: ["src/**/*.{js,jsx,ts,tsx}"],
-        exclude: [
-          "src/main.jsx",
-          "src/setupTests.js",
-          "src/test-utils.jsx",
-          "**/*.test.{js,jsx}",
-          "node_modules/**",
-        ],
-      },
-    },
-  };
-});
-```
-
-11. Modifikasi isi file `.gitignore`, seperti berikut:
-
-```gitignore
-# dependencies (bun install)
-node_modules
-
-# output
-out
-dist
-*.tgz
-
-# code coverage
-coverage
-*.lcov
-
-# logs
-logs
-_.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
-
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-
-# caches
-.eslintcache
-.cache
-*.tsbuildinfo
-
-# IntelliJ based IDEs
-.idea
-
-# Finder (MacOS) folder config
-.DS_Store
-```
-
-12. Buat sendiri logo svg atau cari disini: https://www.svgrepo.com. Setelah itu simpan ke lokasi `public/logo.svg`.
-13. Tambahkan folder baru dengan nama `src`. Di dalam folder tersebut tambahkan file baru dengan nama `index.css`.
-14. Modifikasi isi file `index.css`, seperti berikut:
-
-```css
-@import "tailwindcss";
-
-@layer base {
-  body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  }
-
-  button,
-  a,
-  [role="button"],
-  select,
-  label[for],
-  label[data-testid],
-  summary {
-    cursor: pointer;
-  }
-}
-```
-
-#### 2.1.2 Logika Aplikasi
-
-Buat struktur proyek seperti berikut:
-
-```text
-src/
-├── App.jsx
-├── App.test.jsx
-├── index.css
-├── main.jsx
-├── setupTests.js
-├── store.js
-├── store.test.js
-├── test-utils.jsx
-├── features/
-│   ├── auth/
-│   │   ├── api/
-│   │   │   ├── authApi.js
-│   │   │   └── authApi.test.js
-│   │   ├── layouts/
-│   │   │   ├── AuthLayout.jsx
-│   │   │   └── AuthLayout.test.jsx
-│   │   ├── pages/
-│   │   │   ├── LoginPage.jsx
-│   │   │   ├── LoginPage.test.jsx
-│   │   │   ├── RegisterPage.jsx
-│   │   │   └── RegisterPage.test.jsx
-│   │   └── states/
-│   │       ├── action.js
-│   │       ├── action.test.js
-│   │       ├── reducer.js
-│   │       └── reducer.test.js
-│   ├── todos/
-│   │   ├── api/
-│   │   │   ├── todoApi.js
-│   │   │   └── todoApi.test.js
-│   │   ├── components/
-│   │   │   ├── NavbarComponent.jsx
-│   │   │   ├── NavbarComponent.test.jsx
-│   │   │   ├── SidebarComponent.jsx
-│   │   │   └── SidebarComponent.test.jsx
-│   │   ├── layouts/
-│   │   │   ├── TodoLayout.jsx
-│   │   │   └── TodoLayout.test.jsx
-│   │   ├── modals/
-│   │   │   ├── AddModal.jsx
-│   │   │   ├── AddModal.test.jsx
-│   │   │   ├── ChangeCoverModal.jsx
-│   │   │   ├── ChangeCoverModal.test.jsx
-│   │   │   ├── ChangeModal.jsx
-│   │   │   └── ChangeModal.test.jsx
-│   │   ├── pages/
-│   │   │   ├── DetailPage.jsx
-│   │   │   ├── DetailPage.test.jsx
-│   │   │   ├── HomePage.jsx
-│   │   │   └── HomePage.test.jsx
-│   │   └── states/
-│   │       ├── action.js
-│   │       ├── action.test.js
-│   │       ├── reducer.js
-│   │       └── reducer.test.js
-│   └── users/
-│       ├── api/
-│       │   ├── userApi.js
-│       │   └── userApi.test.js
-│       ├── pages/
-│       │   ├── ProfilePage.jsx
-│       │   ├── ProfilePage.test.jsx
-│       │   ├── UsersPage.jsx
-│       │   └── UsersPage.test.jsx
-│       └── states/
-│           ├── action.js
-│           ├── action.test.js
-│           ├── reducer.js
-│           └── reducer.test.js
-├── helpers/
-│   ├── apiHelper.js
-│   ├── apiHelper.test.js
-│   ├── toolsHelper.js
-│   └── toolsHelper.test.js
-└── hooks/
-    ├── useInput.js
-    └── useInput.test.js
-```
-
-Tahapan pengerjaan:
-
-Unduh file `src-latihan-p4.zip` pada link berikut: [Github](https://github.com/auxtern/itdel-praktikum/tree/main/pabwe/2026)
-
-**a. Modul Helper & Custom Hooks:**
-
-- `src/helpers/apiHelper.js`: Fungsi wrapper HTTP fetch ke backend REST API, otomatisasi header `Authorization: Bearer <token>`, serta penyimpanan/pengambilan token di `localStorage`.
-- `src/helpers/toolsHelper.js`: Utilitas dialog notifikasi SweetAlert2 (`showSuccessDialog`, `showErrorDialog`, `showWarningDialog`, `showConfirmDialog`) dan helper formatting.
-- `src/hooks/useInput.js`: Custom React hook reusable untuk mengelola `state` dan `change handler` pada input form.
-
-**b. Modul Fitur (Feature-driven):**
-
-- `src/features/auth/`: Modul autentikasi pengguna
-  - `api/authApi.js`: Pemanggilan endpoint login (`/auth/login`) dan register (`/auth/register`).
-  - `states/`: Action creators, async thunks, dan slice reducers (`isAuthLogin`, `isAuthRegister`, `isAuthLogout`).
-  - `layouts/AuthLayout.jsx`: Shell layout antarmuka otentikasi.
-  - `pages/`: Halaman formulir login (`LoginPage.jsx`) dan registrasi (`RegisterPage.jsx`).
-- `src/features/todos/`: Modul manajemen tugas (Todo)
-  - `api/todoApi.js`: Pemanggilan endpoint CRUD todo, status penyelesaian, dan unggah berkas cover todo.
-  - `states/`: Action creators, async thunks, dan reducers (`todos`, `todo`, status tambah, ubah, cover, dan hapus).
-  - `components/`: Komponen navigasi dashboard (`NavbarComponent.jsx` dan `SidebarComponent.jsx`).
-  - `modals/`: Modal pop-up form tambah todo (`AddModal.jsx`), ubah todo (`ChangeModal.jsx`), dan unggah gambar cover (`ChangeCoverModal.jsx`).
-  - `layouts/TodoLayout.jsx`: Shell layout dashboard yang menggabungkan navbar, sidebar, dan area konten utama.
-  - `pages/`: Halaman daftar todo (`HomePage.jsx`) dan halaman rincian data todo (`DetailPage.jsx`).
-- `src/features/users/`: Modul data pengguna & profil
-  - `api/userApi.js`: Pemanggilan endpoint daftar pengguna (`/users`), profil saya (`/users/me`), ubah profil, unggah foto, dan ubah kata sandi.
-  - `states/`: Action creators, async thunks, dan slice reducers profil & pengguna.
-  - `pages/`: Halaman daftar pengguna (`UsersPage.jsx`) dan manajemen profil akun (`ProfilePage.jsx`).
-
-**c. Konfigurasi State Management Terpusat (Redux Store):**
-
-- Menyiapkan konfigurasi store utama pada `src/store.js` menggunakan `configureStore` dari `@reduxjs/toolkit` yang menggabungkan seluruh slice reducer dari fitur `auth`, `users`, dan `todos`.
-- Mengintegrasikan `<Provider store={store}>` dan `<BrowserRouter>` pada `src/main.jsx` agar store dan router dapat diakses di seluruh hierarki komponen.
-
-**d. Penataan Rute Aplikasi (`src/App.jsx`):**
-
-- Auth Layout (`/auth`):
-  - `/auth/login`: Halaman Login pengguna.
-  - `/auth/register`: Halaman Registrasi pengguna baru.
-- Todo Layout (`/`):
-  - `/`: Halaman Home (Daftar koleksi Todo).
-  - `/todos/:todoId`: Halaman Detail Todo berdasarkan ID.
-  - `/users`: Halaman Daftar Seluruh Pengguna.
-  - `/profile`: Halaman Pengaturan dan Profil Pengguna.
-
-**e. Penulisan Pengujian Otomatis (Testing):**
-
-- Mengonfigurasi `src/setupTests.js` dengan `@testing-library/jest-dom`.
-- Membuat fungsi helper `renderWithProviders` pada `src/test-utils.jsx` untuk memfasilitasi render komponen bersama Redux Provider dan MemoryRouter.
-- Menulis unit test komprehensif pada setiap modul: helper, hook, API caller, action creators, reducers, komponen antarmuka, modals, layouts, halaman (`pages`), integrasi `src/App.test.jsx`, dan `src/store.test.js`.
-
-#### 2.1.3 Pengujian Aplikasi
-
-1. Pada terminal jalankan perintah:
+### Instalasi
 
 ```bash
-bun run test:coverage
-```
+# 1. Clone repositori
+git clone https://github.com/<username>/{username}-pabwer2026-reactjs.git
+cd {username}-pabwer2026-reactjs
 
-2. Pada hasil pengujian akan terdapat informasi cakupan kode (coverage).
-3. Pastikan pada hasil laporan coverage semuanya **100%**.
+# 2. Install dependensi
+bun install
 
-#### 2.1.4 Menjalankan Aplikasi
+# 3. Salin file environment
+cp .env.example .env
 
-1. Pada terminal jalankan perintah:
-
-```bash
+# 4. Jalankan server development
 bun run dev
 ```
 
-2. Setelah berhasil berjalan lihat url pada bagian local. Klik pada link tersebut, yaitu: http://localhost:3000
-3. Silahkan lakukan eksplorasi mandiri terkait fitur-fitur aplikasi.
+Aplikasi akan berjalan di `http://localhost:<APP_PORT>`.
 
-## B. Studi Kasus
+### Inisialisasi dari Nol (opsional)
 
-### 2.1 Aplikasi Lost & Founds menggunakan ReactJS (JavaScript)
+```bash
+bun create vite {username}-pabwer2026-reactjs --template react
+cd {username}-pabwer2026-reactjs
+bun install
+bun add @reduxjs/toolkit react-redux react-router-dom sweetalert2 react-icons
+bun add tailwindcss @tailwindcss/vite
+bun add -d vitest jsdom @vitest/coverage-v8 @testing-library/react @testing-library/jest-dom @testing-library/user-event
+```
 
-Manfaatkan endpoint berikut: https://open-api.delcom.org/docs/1.0/api-lost-founds sebagai sumber data aplikasi. Aplikasi yang dibuat harus menggunakan bun dan framework JavaScript yaitu ReactJS. Bahasa yang digunakan adalah JavaScript. Gunakan tailwind untuk UI aplikasi, kamu juga dapat memanfaatkan react-icons atau tabler-icons. Gunakan Google Font untuk tipografi aplikasi.
+---
 
-#### 2.1.1 Inisialisasi Proyek & Konfigurasi Lingkungan
+## ⚙️ Konfigurasi Environment
 
-- Buat proyek dengan format penamaan `{username}-pabwer2026-reactjs`. Contoh: `ifs18005-pabwe2026-reactjs`.
-- Inisialisasi proyek React menggunakan `bun create vite` dengan template React JavaScript.
-- Konfigurasi Tailwind CSS v4 (`@tailwindcss/vite` atau Tailwind CSS) dan hubungkan Google Fonts (misal: Plus Jakarta Sans / Inter) pada berkas `index.html`.
-- Konfigurasi `vite.config.js` untuk pengaturan port lokal (menggunakan variabel `APP_PORT` dari environment), define konstanta `DELCOM_BASEURL` (arah ke `https://open-api.delcom.org/api/v1`), serta konfigurasi test runner Vitest & coverage threshold.
-- Siapkan berkas `.env` dan `.env.example` yang memuat konfigurasi `DELCOM_BASEURL` dan `APP_PORT`.
+Buat berkas `.env` berdasarkan `.env.example`:
 
-#### 2.1.2 Modul Helper & Custom Hooks
+```env
+DELCOM_BASEURL=https://open-api.delcom.org/api/v1
+APP_PORT=5173
+```
 
-- `src/helpers/apiHelper.js`: Fungsi wrapper fetch HTTP ke REST API Delcom yang menangani query params, otomatisasi bearer token autentikasi (`Authorization: Bearer <token>`), serta utilitas penyimpanan dan pengambilan token di localStorage (`getAccessToken`, `putAccessToken`).
-- `src/helpers/toolsHelper.js`: Utilitas dialog notifikasi interaktif (menggunakan SweetAlert2) seperti pesan sukses (`showSuccessDialog`), pesan error (`showErrorDialog`), dialog konfirmasi aksi (`showConfirmDialog`), serta helper pemformatan tanggal/waktu (`formatDate`).
-- `src/hooks/useInput.js`: Custom hook reusable untuk mengelola two-way data binding dan penanganan perubahan nilai (state) pada elemen formulir input.
+| Variabel | Deskripsi | Contoh |
+|---|---|---|
+| `DELCOM_BASEURL` | Base URL REST API Delcom | `https://open-api.delcom.org/api/v1` |
+| `APP_PORT` | Port server development lokal | `5173` |
 
-#### 2.1.3 Arsitektur Fitur Autentikasi (`src/features/auth/`)
+Kedua variabel dibaca oleh `vite.config.js`; `DELCOM_BASEURL` didefinisikan sebagai konstanta global (`define`) agar dapat diakses di seluruh aplikasi.
 
-- `api/authApi.js`: Integrasi pemanggilan API login (`POST /auth/login`) dan registrasi akun baru (`POST /auth/register`).
-- `states/`: Action types, action creators, async thunks, dan slice reducers (`isAuthLogin`, `isAuthRegister`, `isAuthLogout`) untuk penanganan autentikasi berbasis Redux.
-- `layouts/AuthLayout.jsx`: Shell layout khusus halaman autentikasi (pusat kontainer form yang responsif, visual banner, dan pengalihan jika pengguna sudah terautentikasi).
-- `pages/`: Halaman formulir login (`LoginPage.jsx`) dan formulir registrasi pengguna (`RegisterPage.jsx`) lengkap dengan validasi form.
+---
 
-#### 2.1.4 Arsitektur Fitur Profil & Pengguna (`src/features/users/`)
+## 📜 Skrip yang Tersedia
 
-- `api/userApi.js`: Integrasi endpoint daftar pengguna (`GET /users`), data profil pengguna aktif (`GET /users/me`), pembaruan informasi profil (`PUT /users/me`), unggah foto avatar (`POST /users/me/photo`), dan ganti kata sandi (`PUT /users/me/password`).
-- `states/`: Action creators, async thunks, dan slice reducers untuk mengelola state data pengguna (`users`, `user`), data profil (`profile`, `isProfile`), serta status mutasi akun (`isChangeProfile`, `isChangeProfilePhoto`, `isChangeProfilePassword`).
-- `pages/`: Halaman eksplorasi daftar semua pengguna sistem (`UsersPage.jsx`) dan halaman manajemen profil pengguna (`ProfilePage.jsx`).
+| Perintah | Fungsi |
+|---|---|
+| `bun run dev` | Menjalankan server development |
+| `bun run build` | Build produksi |
+| `bun run preview` | Pratinjau hasil build |
+| `bun run test` | Menjalankan seluruh pengujian (Vitest) |
+| `bun run coverage` | Menjalankan pengujian dengan laporan coverage |
 
-#### 2.1.5 Arsitektur Fitur Utama Lost & Founds (`src/features/lost-founds/`)
+---
 
-- `api/lostFoundApi.js`: Integrasi fungsi API Lost & Founds:
-  - Mengambil daftar barang hilang & temuan (`GET /lost-founds`) dengan dukungan filter status (`lost` / `found`), `is_completed` (`1` / `0`), serta kepemilikan `is_me=1`.
-  - Melihat detail lengkap laporan barang (`GET /lost-founds/:id`).
-  - Menambahkan laporan kehilangan atau penemuan baru (`POST /lost-founds`).
-  - Memperbarui data laporan dan status penyelesaian (`PUT /lost-founds/:id`).
-  - Mengunggah/mengganti foto bukti atau cover barang (`POST /lost-founds/:id/cover`).
-  - Menghapus laporan barang (`DELETE /lost-founds/:id`).
-  - Mengambil statistik harian (`GET /lost-founds/stats/daily`) dan bulanan (`GET /lost-founds/stats/monthly`).
-- `states/`: Action types, action creators, async thunk functions, dan reducers untuk mengelola:
-  - Koleksi data laporan (`lostFounds`, `lostFound`, `isLostFound`).
-  - Pelacakan proses aksi: tambah (`isLostFoundAdd`, `isLostFoundAdded`), ubah data (`isLostFoundChange`, `isLostFoundChanged`), ubah cover (`isLostFoundChangeCover`, `isLostFoundChangedCover`), dan hapus (`isLostFoundDelete`, `isLostFoundDeleted`).
-  - Pelacakan metrik statistik (`lostFoundStats`).
-- `layouts/LostFoundLayout.jsx`: Shell layout utama dengan navigasi bilah atas (`NavbarComponent`), bilah samping (`SidebarComponent`), mekanisme Route Guarding (verifikasi token & pemuatan sesi profil pengguna), serta area konten dinamis (`<Outlet />`).
-- `components/`: Komponen navigasi antarmuka:
-  - `NavbarComponent.jsx`: Menampilkan logo aplikasi, judul, status sesi, dropdown profil, dan tombol logout.
-  - `SidebarComponent.jsx`: Navigasi menu utama (Dashboard/Laporan, Statistik, Pengguna, Profil Saya) dengan dukungan drawer responsif untuk perangkat mobile.
-- `modals/`: Komponen dialog modal pop-up:
-  - `AddModal.jsx`: Formulir tambah laporan baru (judul, deskripsi, jenis laporan: hilang/ditemukan).
-  - `ChangeModal.jsx`: Formulir ubah informasi laporan beserta toggle status selesai (`is_completed`).
-  - `ChangeCoverModal.jsx`: Modal unggah/ganti gambar cover dengan fitur pratinjau langsung sebelum diunggah.
-- `pages/`: Halaman utama aplikasi:
-  - `HomePage.jsx`: Dashboard ringkasan metrik statistik (Total, Barang Hilang, Barang Ditemukan, Selesai), filter interaktif status laporan, pencarian kata kunci (live search), tabel/kartu daftar barang, dan aksi cepat.
-  - `DetailPage.jsx`: Tampilan mendalam rincian laporan (foto cover rasio adaptif, identitas pelapor, status penyelesaian, tanggal lapor, deskripsi lengkap, serta tombol edit cover, edit data, dan hapus).
+## 🧩 Arsitektur & Modul
 
-#### 2.1.6 Integrasi State Management Terpusat (Redux Store)
+Proyek menggunakan arsitektur **feature-based**: setiap fitur memiliki lapisan `api`, `states`, `pages`, dan (bila perlu) `layouts`, `components`, `modals`.
 
-- `src/store.js`: Konfigurasi single store terpusat menggunakan `configureStore` dari `@reduxjs/toolkit` yang memadukan seluruh slice reducers dari fitur auth, users, dan lost-founds.
-- `src/main.jsx`: Pembungkus hirarki komponen utama dengan `<Provider store={store}>` dari react-redux dan `<BrowserRouter>` dari react-router-dom.
+### Helper & Hooks
 
-#### 2.1.7 Penataan Rute Aplikasi & Route Guarding (`src/App.jsx`)
+| Berkas | Fungsi |
+|---|---|
+| `helpers/apiHelper.js` | Wrapper `fetch` ke API Delcom (query params, bearer token), serta `getAccessToken` & `putAccessToken` |
+| `helpers/toolsHelper.js` | `showSuccessDialog`, `showErrorDialog`, `showConfirmDialog`, `formatDate` |
+| `hooks/useInput.js` | Hook reusable untuk two-way binding pada input form |
 
-Mengonfigurasi deklarasi routing aplikasi menggunakan react-router-dom:
+### State Management (Redux)
 
-- Auth Routes (`/auth` membungkus `AuthLayout`):
-  - `/auth/login`: Halaman Login.
-  - `/auth/register`: Halaman Registrasi.
-- Protected Dashboard Routes (`/` membungkus `LostFoundLayout`):
-  - `/`: Halaman Beranda (Daftar & filter laporan Lost & Found).
-  - `/lost-founds/:id`: Halaman Detail laporan Lost & Found.
-  - `/users`: Halaman Daftar Pengguna.
-  - `/profile`: Halaman Profil & Pengaturan Akun Pengguna.
+Semua *slice* digabungkan di `src/store.js` melalui `configureStore`.
 
-#### 2.1.8 Pengujian Otomatis (Unit & Integration Testing)
+| Fitur | State |
+|---|---|
+| **Auth** | `isAuthLogin`, `isAuthRegister`, `isAuthLogout` |
+| **Users** | `users`, `user`, `profile`, `isProfile`, `isChangeProfile`, `isChangeProfilePhoto`, `isChangeProfilePassword` |
+| **Lost & Founds** | `lostFounds`, `lostFound`, `isLostFound`, `isLostFoundAdd`, `isLostFoundAdded`, `isLostFoundChange`, `isLostFoundChanged`, `isLostFoundChangeCover`, `isLostFoundChangedCover`, `isLostFoundDelete`, `isLostFoundDeleted`, `lostFoundStats` |
 
-- Penyiapan konfigurasi environment pengujian Vitest dan jsdom pada `src/setupTests.js` dengan `@testing-library/jest-dom`.
-- `src/test-utils.jsx`: Helper utilitas pengujian khusus (`renderWithProviders`) untuk me-render komponen yang terhubung dengan Redux Store dan router memory.
-- Penulisan skenario pengujian komprehensif pada setiap modul: helper, custom hooks, API callers, action creators, reducers, komponen navigasi, modals, layouts, pages, integrasi `App.test.jsx`, dan verifikasi `store.test.js`.
+### Layout
+
+- **`AuthLayout`** — kontainer form responsif, visual banner, dan redirect bila sudah login.
+- **`LostFoundLayout`** — Navbar, Sidebar, *route guard* (verifikasi token & pemuatan profil), serta `<Outlet />`.
+
+### Komponen & Modal
+
+| Komponen | Deskripsi |
+|---|---|
+| `NavbarComponent` | Logo, judul, status sesi, dropdown profil, tombol logout |
+| `SidebarComponent` | Menu: Dashboard/Laporan, Statistik, Pengguna, Profil Saya (drawer di mobile) |
+| `AddModal` | Form tambah laporan (judul, deskripsi, jenis: hilang/ditemukan) |
+| `ChangeModal` | Form ubah laporan + toggle `is_completed` |
+| `ChangeCoverModal` | Unggah/ganti cover dengan pratinjau langsung |
+
+---
+
+## 🗺 Daftar Rute
+
+| Rute | Halaman | Akses |
+|---|---|---|
+| `/auth/login` | LoginPage | Publik |
+| `/auth/register` | RegisterPage | Publik |
+| `/` | HomePage (daftar & filter laporan) | 🔒 Terproteksi |
+| `/lost-founds/:id` | DetailPage | 🔒 Terproteksi |
+| `/users` | UsersPage | 🔒 Terproteksi |
+| `/profile` | ProfilePage | 🔒 Terproteksi |
+
+---
+
+## 🌐 Endpoint API
+
+Dokumentasi lengkap: [Delcom Lost & Founds API](https://open-api.delcom.org/docs/1.0/api-lost-founds)
+
+### Autentikasi
+
+| Method | Endpoint | Deskripsi |
+|---|---|---|
+| `POST` | `/auth/login` | Login |
+| `POST` | `/auth/register` | Registrasi akun baru |
+
+### Pengguna
+
+| Method | Endpoint | Deskripsi |
+|---|---|---|
+| `GET` | `/users` | Daftar pengguna |
+| `GET` | `/users/me` | Profil pengguna aktif |
+| `PUT` | `/users/me` | Perbarui profil |
+| `POST` | `/users/me/photo` | Unggah foto avatar |
+| `PUT` | `/users/me/password` | Ganti kata sandi |
+
+### Lost & Founds
+
+| Method | Endpoint | Deskripsi |
+|---|---|---|
+| `GET` | `/lost-founds` | Daftar laporan (filter: `status`, `is_completed`, `is_me`) |
+| `GET` | `/lost-founds/:id` | Detail laporan |
+| `POST` | `/lost-founds` | Tambah laporan |
+| `PUT` | `/lost-founds/:id` | Ubah laporan & status penyelesaian |
+| `POST` | `/lost-founds/:id/cover` | Unggah/ganti cover |
+| `DELETE` | `/lost-founds/:id` | Hapus laporan |
+| `GET` | `/lost-founds/stats/daily` | Statistik harian |
+| `GET` | `/lost-founds/stats/monthly` | Statistik bulanan |
+
+> Semua endpoint selain login & register memerlukan header `Authorization: Bearer <token>`.
+
+---
+
+## 🧪 Pengujian
+
+Pengujian menggunakan **Vitest** dengan environment **jsdom** dan **@testing-library/jest-dom** (dikonfigurasi di `src/setupTests.js`).
+
+`src/test-utils.jsx` menyediakan `renderWithProviders` untuk me-render komponen dengan Redux Store dan memory router.
+
+**Cakupan pengujian:**
+
+- ✅ Helpers (`apiHelper`, `toolsHelper`)
+- ✅ Custom hooks (`useInput`)
+- ✅ API callers
+- ✅ Action creators & reducers
+- ✅ Komponen navigasi (Navbar, Sidebar)
+- ✅ Modals
+- ✅ Layouts
+- ✅ Pages
+- ✅ Integrasi `App.test.jsx`
+- ✅ Verifikasi `store.test.js`
+
+```bash
+# Jalankan test
+bun run test
+
+# Jalankan test + coverage (mengikuti threshold di vite.config.js)
+bun run coverage
+```
+
+---
+
+## 🏷 Catatan Penamaan
+
+Format nama proyek: **`{username}-pabwer2026-reactjs`**
+Contoh: `ifs18005-pabwer2026-reactjs`
+
+---
+
+<p align="center">Dibuat untuk keperluan tugas Pengembangan Aplikasi Berbasis Web — 2026</p>\
+

@@ -1,133 +1,84 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  buildUrl,
+  callApi,
   getAccessToken,
   putAccessToken,
-  fetchWithToken,
+  removeAccessToken,
 } from "./apiHelper";
 
-const mockResponse = (body, ok = true) => ({
-  ok,
-  json: () => Promise.resolve(body),
+const mockFetch = (response) => {
+  const spy = vi.fn().mockResolvedValue(response);
+  vi.stubGlobal("fetch", spy);
+  return spy;
+};
+const jsonResponse = (json, ok = true, status = 200) => ({ ok, status, json: async () => json });
+
+afterEach(() => vi.unstubAllGlobals());
+
+describe("token storage", () => {
+  it("menyimpan, membaca, dan menghapus token", () => {
+    expect(getAccessToken()).toBeNull();
+    putAccessToken("abc");
+    expect(getAccessToken()).toBe("abc");
+    removeAccessToken();
+    expect(getAccessToken()).toBeNull();
+  });
 });
 
-describe("apiHelper", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    globalThis.fetch = vi.fn();
+describe("buildUrl", () => {
+  it("menambahkan query dan membuang nilai kosong", () => {
+    const url = buildUrl("/lost-founds", { status: "lost", is_me: 1, a: "", b: null, c: undefined });
+    expect(url).toBe(`${DELCOM_BASEURL}/lost-founds?status=lost&is_me=1`);
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  it("bekerja tanpa params", () => {
+    expect(buildUrl("/users")).toBe(`${DELCOM_BASEURL}/users`);
+  });
+});
+
+describe("callApi", () => {
+  it("GET tanpa token dan tanpa body", async () => {
+    const spy = mockFetch(jsonResponse({ success: true, data: { ok: 1 } }));
+    const json = await callApi("/users");
+    expect(json.data.ok).toBe(1);
+    const [, init] = spy.mock.calls[0];
+    expect(init.method).toBe("GET");
+    expect(init.headers.Authorization).toBeUndefined();
+    expect(init.body).toBeUndefined();
   });
 
-  describe("token storage", () => {
-    it("menyimpan dan mengambil token dari localStorage", () => {
-      putAccessToken("abc123");
-      expect(getAccessToken()).toBe("abc123");
-    });
-
-    it("mengembalikan null jika token belum ada", () => {
-      expect(getAccessToken()).toBeNull();
-    });
+  it("mengirim bearer token dan body JSON", async () => {
+    putAccessToken("tok");
+    const spy = mockFetch(jsonResponse({ success: true }));
+    await callApi("/auth/login", { method: "POST", body: { a: 1 } });
+    const [, init] = spy.mock.calls[0];
+    expect(init.headers.Authorization).toBe("Bearer tok");
+    expect(init.headers["Content-Type"]).toBe("application/json");
+    expect(init.body).toBe(JSON.stringify({ a: 1 }));
   });
 
-  describe("fetchWithToken", () => {
-    it("memanggil URL dasar + endpoint tanpa Authorization jika tidak ada token", async () => {
-      fetch.mockResolvedValue(mockResponse({ status: "success" }));
+  it("mengirim FormData apa adanya tanpa Content-Type", async () => {
+    const spy = mockFetch(jsonResponse({ success: true }));
+    const form = new FormData();
+    await callApi("/x", { method: "POST", form });
+    const [, init] = spy.mock.calls[0];
+    expect(init.body).toBe(form);
+    expect(init.headers["Content-Type"]).toBeUndefined();
+  });
 
-      const result = await fetchWithToken("/lost-founds");
+  it("melempar error dengan pesan dari server", async () => {
+    mockFetch(jsonResponse({ success: false, message: "Salah" }, false, 400));
+    await expect(callApi("/x")).rejects.toThrow("Salah");
+  });
 
-      expect(result).toEqual({ status: "success" });
-      const [url, init] = fetch.mock.calls[0];
-      expect(url).toBe(`${DELCOM_BASEURL}/lost-founds`);
-      expect(init.headers["Content-Type"]).toBe("application/json");
-      expect(init.headers.Authorization).toBeUndefined();
-    });
+  it("melempar error generik bila respons bukan JSON", async () => {
+    mockFetch({ ok: false, status: 500, json: async () => { throw new Error("bad json"); } });
+    await expect(callApi("/x")).rejects.toThrow("Permintaan gagal (500)");
+  });
 
-    it("menambahkan header Authorization Bearer jika token tersedia", async () => {
-      putAccessToken("token-xyz");
-      fetch.mockResolvedValue(mockResponse({ status: "success" }));
-
-      await fetchWithToken("/users/me");
-
-      expect(fetch.mock.calls[0][1].headers.Authorization).toBe(
-        "Bearer token-xyz"
-      );
-    });
-
-    it("menyusun query params dan mengabaikan nilai kosong", async () => {
-      fetch.mockResolvedValue(mockResponse({ status: "success" }));
-
-      await fetchWithToken("/lost-founds", {
-        params: {
-          status: "lost",
-          is_completed: 0,
-          is_me: "",
-          keyword: undefined,
-          other: null,
-        },
-      });
-
-      expect(fetch.mock.calls[0][0]).toBe(
-        `${DELCOM_BASEURL}/lost-founds?status=lost&is_completed=0`
-      );
-    });
-
-    it("tidak menambahkan tanda tanya jika semua params kosong", async () => {
-      fetch.mockResolvedValue(mockResponse({ status: "success" }));
-
-      await fetchWithToken("/lost-founds", { params: { is_me: "" } });
-
-      expect(fetch.mock.calls[0][0]).toBe(`${DELCOM_BASEURL}/lost-founds`);
-    });
-
-    it("mengirim method dan body JSON serta menggabungkan header kustom", async () => {
-      fetch.mockResolvedValue(mockResponse({ status: "success" }));
-
-      await fetchWithToken("/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email: "a@b.c" }),
-        headers: { "X-Custom": "1" },
-      });
-
-      const init = fetch.mock.calls[0][1];
-      expect(init.method).toBe("POST");
-      expect(init.body).toBe(JSON.stringify({ email: "a@b.c" }));
-      expect(init.headers["X-Custom"]).toBe("1");
-      expect(init.headers["Content-Type"]).toBe("application/json");
-    });
-
-    it("tidak memaksa Content-Type saat body adalah FormData", async () => {
-      fetch.mockResolvedValue(mockResponse({ status: "success" }));
-      const formData = new FormData();
-      formData.append("cover", new Blob(["x"]), "cover.png");
-
-      await fetchWithToken("/lost-founds/1/cover", {
-        method: "POST",
-        body: formData,
-      });
-
-      const init = fetch.mock.calls[0][1];
-      expect(init.body).toBe(formData);
-      expect(init.headers["Content-Type"]).toBeUndefined();
-    });
-
-    it("melempar Error dengan pesan dari server saat respons gagal", async () => {
-      fetch.mockResolvedValue(
-        mockResponse({ status: "fail", message: "Data tidak valid" }, false)
-      );
-
-      await expect(fetchWithToken("/auth/login")).rejects.toThrow(
-        "Data tidak valid"
-      );
-    });
-
-    it("melempar Error pesan bawaan jika server tidak mengirim message", async () => {
-      fetch.mockResolvedValue(mockResponse({}, false));
-
-      await expect(fetchWithToken("/auth/login")).rejects.toThrow(
-        "Something went wrong"
-      );
-    });
+  it("menganggap success:false sebagai error walau HTTP 200", async () => {
+    mockFetch(jsonResponse({ success: false, message: "Ditolak" }));
+    await expect(callApi("/x")).rejects.toThrow("Ditolak");
   });
 });

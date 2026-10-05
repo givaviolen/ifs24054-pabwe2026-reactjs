@@ -1,26 +1,20 @@
-import { describe, it, expect, vi } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { act, renderHook } from "@testing-library/react";
 import useInput from "./useInput";
 
-describe("useInput hook", () => {
-  it("should initialize with default value", () => {
-    const { result } = renderHook(() => useInput("initial"));
-    expect(result.current[0]).toBe("initial");
+describe("useInput", () => {
+  it("memakai nilai awal bawaan string kosong", () => {
+    const { result } = renderHook(() => useInput());
+    expect(result.current.value).toBe("");
   });
 
-  it("should handle value change", () => {
-    const { result } = renderHook(() => useInput(""));
-    act(() => {
-      result.current[1]({ target: { value: "new value" } });
-    });
-    expect(result.current[0]).toBe("new value");
-  });
-
-  it("should manually set value", () => {
-    const { result } = renderHook(() => useInput(""));
-    act(() => {
-      result.current[2]("manual value");
-    });
-    expect(result.current[0]).toBe("manual value");
+  it("memperbarui nilai lewat onChange, setValue, dan reset", () => {
+    const { result } = renderHook(() => useInput("awal"));
+    act(() => result.current.onChange({ target: { value: "baru" } }));
+    expect(result.current.value).toBe("baru");
+    act(() => result.current.setValue("manual"));
+    expect(result.current.value).toBe("manual");
+    act(() => result.current.reset());
+    expect(result.current.value).toBe("awal");
   });
 });

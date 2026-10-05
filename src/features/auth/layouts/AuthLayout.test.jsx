@@ -1,23 +1,27 @@
-import React from "react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { screen } from "@testing-library/react";
-import { renderWithProviders } from "../../../test-utils";
+import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./AuthLayout";
-import { getAccessToken } from "../../../helpers/apiHelper";
+import { renderWithProviders, stateWith } from "../../../test-utils";
 
-vi.mock("../../../helpers/apiHelper", () => ({
-  getAccessToken: vi.fn(),
-}));
+const tree = (
+  <Routes>
+    <Route path="/" element={<p>Beranda</p>} />
+    <Route path="/auth" element={<AuthLayout />}>
+      <Route path="login" element={<p>Isi login</p>} />
+    </Route>
+  </Routes>
+);
 
 describe("AuthLayout", () => {
-  it("renders layout when not logged in", () => {
-    vi.mocked(getAccessToken).mockReturnValue(null);
-    renderWithProviders(<AuthLayout />);
-    expect(screen.getByText(/Platform pelaporan/i)).toBeInTheDocument();
+  it("menampilkan banner dan konten anak untuk tamu", () => {
+    renderWithProviders(tree, { route: "/auth/login" });
+    expect(screen.getByText("Isi login")).toBeInTheDocument();
+    expect(screen.getByText(/Biar kampus yang bantu cari/)).toBeInTheDocument();
   });
 
-  it("redirects to home when logged in", () => {
-    vi.mocked(getAccessToken).mockReturnValue("dummy-token");
-    renderWithProviders(<AuthLayout />);
+  it("mengalihkan ke beranda bila sudah punya token", () => {
+    renderWithProviders(tree, { route: "/auth/login", preloadedState: stateWith({ auth: { token: "t" } }) });
+    expect(screen.getByText("Beranda")).toBeInTheDocument();
   });
 });

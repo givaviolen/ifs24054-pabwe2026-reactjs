@@ -1,40 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { asyncLoginUser, asyncRegisterUser } from "./action";
+import { getAccessToken } from "../../../helpers/apiHelper";
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    isAuthLogin: false,
-    isAuthRegister: false,
-  },
+  initialState: () => ({ token: getAccessToken(), registered: false }),
   reducers: {
-    logout: (state) => {
-      localStorage.removeItem("accessToken");
-      state.isAuthLogin = false;
+    isAuthLogin: (state, { payload }) => {
+      state.token = payload;
+      state.registered = false;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(asyncLoginUser.pending, (state) => {
-        state.isAuthLogin = true;
-      })
-      .addCase(asyncLoginUser.fulfilled, (state) => {
-        state.isAuthLogin = false;
-      })
-      .addCase(asyncLoginUser.rejected, (state) => {
-        state.isAuthLogin = false;
-      })
-      .addCase(asyncRegisterUser.pending, (state) => {
-        state.isAuthRegister = true;
-      })
-      .addCase(asyncRegisterUser.fulfilled, (state) => {
-        state.isAuthRegister = false;
-      })
-      .addCase(asyncRegisterUser.rejected, (state) => {
-        state.isAuthRegister = false;
-      });
+    isAuthRegister: (state) => {
+      state.registered = true;
+    },
+    isAuthLogout: (state) => {
+      state.token = null;
+      state.registered = false;
+    },
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { isAuthLogin, isAuthRegister, isAuthLogout } = authSlice.actions;
 export default authSlice.reducer;

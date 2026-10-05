@@ -1,51 +1,37 @@
-const TOKEN_KEY = "accessToken";
+// Pembungkus fetch untuk REST API Delcom + penyimpanan token di localStorage.
+const TOKEN_SLOT = "temubalik.token";
 
-export const getAccessToken = () => {
-  return localStorage.getItem(TOKEN_KEY);
+export const getAccessToken = () => localStorage.getItem(TOKEN_SLOT);
+export const putAccessToken = (token) => localStorage.setItem(TOKEN_SLOT, token);
+export const removeAccessToken = () => localStorage.removeItem(TOKEN_SLOT);
+
+export const buildUrl = (path, params = {}) => {
+  // Argumen kedua dibutuhkan agar base URL relatif (mis. "/api-proxy") valid.
+  const url = new URL(`${DELCOM_BASEURL}${path}`, window.location.origin);
+  Object.entries(params)
+    .filter(([, value]) => `${value ?? ""}` !== "")
+    .forEach(([key, value]) => url.searchParams.append(key, value));
+  return url.toString();
 };
 
-export const putAccessToken = (token) => {
-  localStorage.setItem(TOKEN_KEY, token);
-};
-
-const buildQuery = (params = {}) => {
-  const searchParams = new URLSearchParams();
-
-  Object.entries(params).forEach(([key, value]) => {
-    if ((value ?? "") !== "") {
-      searchParams.append(key, value);
-    }
-  });
-
-  const query = searchParams.toString();
-  return query ? `?${query}` : "";
-};
-
-export const fetchWithToken = async (endpoint, options = {}) => {
-  const { params, headers: customHeaders, ...fetchOptions } = options;
+export async function callApi(path, { method = "GET", body, form, params } = {}) {
+  const headers = { Accept: "application/json" };
   const token = getAccessToken();
-  const headers = { ...customHeaders };
+  if (token) headers.Authorization = `Bearer ${token}`;
 
-  // FormData (upload cover/foto) harus dikirim tanpa Content-Type manual
-  // agar browser menambahkan boundary multipart/form-data secara otomatis.
-  if (!(fetchOptions.body instanceof FormData)) {
+  let payload;
+  if (form) {
+    payload = form;
+  } else if (body) {
     headers["Content-Type"] = "application/json";
+    payload = JSON.stringify(body);
   }
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  const response = await fetch(buildUrl(path, params), { method, headers, body: payload });
+  const json = await response.json().catch(() => ({}));
+
+  if (!response.ok || json.success === false) {
+    throw new Error(json.message || `Permintaan gagal (${response.status})`);
   }
-
-  const response = await fetch(
-    `${DELCOM_BASEURL}${endpoint}${buildQuery(params)}`,
-    { ...fetchOptions, headers }
-  );
-
-  const responseJson = await response.json();
-
-  if (!response.ok) {
-    throw new Error(responseJson.message || "Something went wrong");
-  }
-
-  return responseJson;
-};
+  return json;
+}

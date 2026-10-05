@@ -1,56 +1,52 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { asyncLoginUser, asyncRegisterUser } from "./action";
-import { loginUser, registerUser } from "../api/authApi";
-import { putAccessToken } from "../../../helpers/apiHelper";
-import { showSuccessDialog, showErrorDialog } from "../../../helpers/toolsHelper";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { asyncLogin, asyncLogout, asyncRegister } from "./action";
+import { isAuthLogin, isAuthLogout, isAuthRegister } from "./reducer";
+import { postLogin, postRegister } from "../api/authApi";
+import { getAccessToken, putAccessToken } from "../../../helpers/apiHelper";
+import { showErrorDialog, showSuccessDialog } from "../../../helpers/toolsHelper";
 
-vi.mock("../api/authApi", () => ({
-  loginUser: vi.fn(),
-  registerUser: vi.fn(),
-}));
-vi.mock("../../../helpers/apiHelper", () => ({
-  putAccessToken: vi.fn(),
-}));
+vi.mock("../api/authApi");
 vi.mock("../../../helpers/toolsHelper", () => ({
-  showSuccessDialog: vi.fn(),
   showErrorDialog: vi.fn(),
+  showSuccessDialog: vi.fn().mockResolvedValue({}),
 }));
 
-describe("auth actions", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+const dispatch = vi.fn();
+beforeEach(() => vi.clearAllMocks());
+
+describe("asyncLogin", () => {
+  it("menyimpan token dan dispatch isAuthLogin", async () => {
+    postLogin.mockResolvedValue({ data: { token: "T" } });
+    expect(await asyncLogin({ email: "e" })(dispatch)).toBe(true);
+    expect(getAccessToken()).toBe("T");
+    expect(dispatch).toHaveBeenCalledWith(isAuthLogin("T"));
   });
 
-  it("should dispatch login success", async () => {
-    vi.mocked(loginUser).mockResolvedValue({ data: { token: "abc" } });
-    const dispatch = vi.fn();
-    const result = await asyncLoginUser({ email: "a", password: "b" })(dispatch, () => {}, {});
-    expect(putAccessToken).toHaveBeenCalledWith("abc");
+  it("menampilkan dialog error saat gagal", async () => {
+    postLogin.mockRejectedValue(new Error("salah"));
+    expect(await asyncLogin({})(dispatch)).toBe(false);
+    expect(showErrorDialog).toHaveBeenCalledWith("salah");
+  });
+});
+
+describe("asyncRegister", () => {
+  it("sukses -> dispatch isAuthRegister + dialog sukses", async () => {
+    postRegister.mockResolvedValue({});
+    expect(await asyncRegister({})(dispatch)).toBe(true);
+    expect(dispatch).toHaveBeenCalledWith(isAuthRegister());
     expect(showSuccessDialog).toHaveBeenCalled();
-    expect(result.payload).toEqual({ token: "abc" });
   });
 
-  it("should dispatch login error", async () => {
-    vi.mocked(loginUser).mockRejectedValue(new Error("err"));
-    const dispatch = vi.fn();
-    const result = await asyncLoginUser({ email: "a", password: "b" })(dispatch, () => {}, {});
-    expect(showErrorDialog).toHaveBeenCalledWith("Gagal", "err");
-    expect(result.payload).toBe("err");
+  it("gagal -> dialog error", async () => {
+    postRegister.mockRejectedValue(new Error("email dipakai"));
+    expect(await asyncRegister({})(dispatch)).toBe(false);
+    expect(showErrorDialog).toHaveBeenCalledWith("email dipakai");
   });
+});
 
-  it("should dispatch register success", async () => {
-    vi.mocked(registerUser).mockResolvedValue({ data: { msg: "ok" } });
-    const dispatch = vi.fn();
-    const result = await asyncRegisterUser({ name: "a", email: "b", password: "c" })(dispatch, () => {}, {});
-    expect(showSuccessDialog).toHaveBeenCalled();
-    expect(result.payload).toEqual({ msg: "ok" });
-  });
-
-  it("should dispatch register error", async () => {
-    vi.mocked(registerUser).mockRejectedValue(new Error("err"));
-    const dispatch = vi.fn();
-    const result = await asyncRegisterUser({ name: "a", email: "b", password: "c" })(dispatch, () => {}, {});
-    expect(showErrorDialog).toHaveBeenCalledWith("Gagal", "err");
-    expect(result.payload).toBe("err");
-  });
+it("asyncLogout menghapus token dan dispatch isAuthLogout", () => {
+  putAccessToken("x");
+  asyncLogout()(dispatch);
+  expect(getAccessToken()).toBeNull();
+  expect(dispatch).toHaveBeenCalledWith(isAuthLogout());
 });

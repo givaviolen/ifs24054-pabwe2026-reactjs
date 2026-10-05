@@ -1,33 +1,33 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUser, registerUser } from "../api/authApi";
-import { putAccessToken } from "../../../helpers/apiHelper";
-import { showSuccessDialog, showErrorDialog } from "../../../helpers/toolsHelper";
+import { postLogin, postRegister } from "../api/authApi";
+import { putAccessToken, removeAccessToken } from "../../../helpers/apiHelper";
+import { showErrorDialog, showSuccessDialog } from "../../../helpers/toolsHelper";
+import { isAuthLogin, isAuthLogout, isAuthRegister } from "./reducer";
 
-export const asyncLoginUser = createAsyncThunk(
-  "auth/login",
-  async (payload, { rejectWithValue }) => {
-    try {
-      const response = await loginUser(payload);
-      putAccessToken(response.data.token);
-      showSuccessDialog("Berhasil", "Login berhasil!");
-      return response.data;
-    } catch (error) {
-      showErrorDialog("Gagal", error.message);
-      return rejectWithValue(error.message);
-    }
+export const asyncLogin = (credentials) => async (dispatch) => {
+  try {
+    const { data } = await postLogin(credentials);
+    putAccessToken(data.token);
+    dispatch(isAuthLogin(data.token));
+    return true;
+  } catch (error) {
+    showErrorDialog(error.message);
+    return false;
   }
-);
+};
 
-export const asyncRegisterUser = createAsyncThunk(
-  "auth/register",
-  async (payload, { rejectWithValue }) => {
-    try {
-      const response = await registerUser(payload);
-      showSuccessDialog("Berhasil", "Registrasi berhasil! Silakan login.");
-      return response.data;
-    } catch (error) {
-      showErrorDialog("Gagal", error.message);
-      return rejectWithValue(error.message);
-    }
+export const asyncRegister = (identity) => async (dispatch) => {
+  try {
+    await postRegister(identity);
+    dispatch(isAuthRegister());
+    await showSuccessDialog("Akun berhasil dibuat. Silakan masuk.");
+    return true;
+  } catch (error) {
+    showErrorDialog(error.message);
+    return false;
   }
-);
+};
+
+export const asyncLogout = () => (dispatch) => {
+  removeAccessToken();
+  dispatch(isAuthLogout());
+};

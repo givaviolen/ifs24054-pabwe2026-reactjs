@@ -1,54 +1,53 @@
-import React from "react";
-import { describe, it, expect, vi } from "vitest";
-import { screen, fireEvent, waitFor } from "@testing-library/react";
-import { renderWithProviders } from "../../../test-utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import LoginPage from "./LoginPage";
-import * as authApi from "../api/authApi";
-import { putAccessToken } from "../../../helpers/apiHelper";
+import { postLogin } from "../api/authApi";
+import { renderWithProviders } from "../../../test-utils";
 
-vi.mock("../api/authApi", () => ({
-  loginUser: vi.fn(),
-}));
-vi.mock("../../../helpers/apiHelper", () => ({
-  putAccessToken: vi.fn(),
-  getAccessToken: vi.fn(),
-}));
-vi.mock("../../../helpers/toolsHelper", () => ({
-  showSuccessDialog: vi.fn(),
-  showErrorDialog: vi.fn(),
-}));
+vi.mock("../api/authApi");
+vi.mock("../../../helpers/toolsHelper", () => ({ showErrorDialog: vi.fn(), showSuccessDialog: vi.fn() }));
+
+beforeEach(() => vi.clearAllMocks());
 
 describe("LoginPage", () => {
-  it("renders form and handles submit success", async () => {
-    vi.mocked(authApi.loginUser).mockResolvedValue({ data: { token: "abc" } });
+  it("menampilkan error validasi dan tidak memanggil API", async () => {
     renderWithProviders(<LoginPage />);
-    
-    fireEvent.change(screen.getByPlaceholderText(/admin@delcom/i), { target: { value: "t@t.com" } });
-    fireEvent.change(screen.getByPlaceholderText(/••••••••/i), { target: { value: "123" } });
-    fireEvent.click(screen.getByRole("button", { name: /Login/i }));
-    
-    await waitFor(() => {
-      expect(authApi.loginUser).toHaveBeenCalled();
-    });
+    await userEvent.type(screen.getByLabelText("Email"), "salah");
+    await userEvent.type(screen.getByLabelText("Kata sandi"), "123");
+    await userEvent.click(screen.getByRole("button", { name: "Masuk" }));
+    expect(screen.getByText("Format email tidak valid")).toBeInTheDocument();
+    expect(screen.getByText("Kata sandi minimal 6 karakter")).toBeInTheDocument();
+    expect(postLogin).not.toHaveBeenCalled();
   });
 
-  it("renders form and handles submit reject", async () => {
-    vi.mocked(authApi.loginUser).mockRejectedValue(new Error("fail"));
+  it("toggle tampilkan/sembunyikan kata sandi", async () => {
     renderWithProviders(<LoginPage />);
-    
-    fireEvent.change(screen.getByPlaceholderText(/admin@delcom/i), { target: { value: "t@t.com" } });
-    fireEvent.change(screen.getByPlaceholderText(/••••••••/i), { target: { value: "123" } });
-    fireEvent.click(screen.getByRole("button", { name: /Login/i }));
-    
-    await waitFor(() => {
-      expect(authApi.loginUser).toHaveBeenCalled();
-    });
+    const input = screen.getByLabelText("Kata sandi");
+    expect(input).toHaveAttribute("type", "password");
+    await userEvent.click(screen.getByRole("button", { name: "Tampilkan kata sandi" }));
+    expect(input).toHaveAttribute("type", "text");
+    await userEvent.click(screen.getByRole("button", { name: "Sembunyikan kata sandi" }));
+    expect(input).toHaveAttribute("type", "password");
   });
 
-  it("renders processing state when isAuthLogin is true", () => {
-    renderWithProviders(<LoginPage />, {
-      preloadedState: { auth: { isAuthLogin: true } }
-    });
-    expect(screen.getByRole("button", { name: /Memproses/i })).toBeDisabled();
+  it("login berhasil menyimpan token ke store", async () => {
+    postLogin.mockResolvedValue({ data: { token: "JWT" } });
+    const { store } = renderWithProviders(<LoginPage />);
+    await userEvent.type(screen.getByLabelText("Email"), "a@b.co");
+    await userEvent.type(screen.getByLabelText("Kata sandi"), "rahasia1");
+    await userEvent.click(screen.getByRole("button", { name: "Masuk" }));
+    await waitFor(() => expect(store.getState().auth.token).toBe("JWT"));
+    expect(postLogin).toHaveBeenCalledWith({ email: "a@b.co", password: "rahasia1" });
+  });
+
+  it("login gagal tidak mengubah token", async () => {
+    postLogin.mockRejectedValue(new Error("Kredensial salah"));
+    const { store } = renderWithProviders(<LoginPage />);
+    await userEvent.type(screen.getByLabelText("Email"), "a@b.co");
+    await userEvent.type(screen.getByLabelText("Kata sandi"), "rahasia1");
+    await userEvent.click(screen.getByRole("button", { name: "Masuk" }));
+    await waitFor(() => expect(postLogin).toHaveBeenCalled());
+    expect(store.getState().auth.token).toBeNull();
   });
 });
