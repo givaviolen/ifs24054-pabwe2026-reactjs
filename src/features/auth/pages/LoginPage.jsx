@@ -47,7 +47,7 @@ export default function LoginPage() {
             placeholder="nama@del.ac.id"
             value={email.value}
             onChange={email.onChange}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
           />
           {errors.email && <p className="mt-2 text-sm font-medium text-red-500">{errors.email}</p>}
         </div>
@@ -63,7 +63,7 @@ export default function LoginPage() {
               autoComplete="current-password"
               value={password.value}
               onChange={password.onChange}
-              className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-4 pr-12 text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-4 pr-12 text-slate-900 placeholder-slate-400 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
             />
             <button
               type="button"
@@ -83,11 +83,11 @@ export default function LoginPage() {
           id="login-submit-button"
           type="submit"
           disabled={submitting}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 hover:shadow disabled:opacity-70"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-teal-700 hover:shadow disabled:opacity-70"
         >
           {submitting ? (
             <>
-              <IconLoader2 size={20} className="animate-spin" /> Memproses…
+              <IconLoader2 size={20} className="animate-spin" /> Memprosesâ€¦
             </>
           ) : (
             <>
@@ -99,7 +99,7 @@ export default function LoginPage() {
 
       <p className="mt-8 text-center text-sm font-medium text-slate-500 lg:text-left">
         Belum punya akun?{" "}
-        <Link to="/auth/register" className="text-blue-600 hover:text-blue-700 hover:underline">
+        <Link to="/auth/register" className="text-teal-600 hover:text-teal-700 hover:underline">
           Daftar sekarang
         </Link>
       </p>

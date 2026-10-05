@@ -54,7 +54,7 @@ export default function RegisterPage() {
             placeholder="John Doe"
             value={name.value}
             onChange={name.onChange}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
           />
           {errors.name && <p className="mt-2 text-sm font-medium text-red-500">{errors.name}</p>}
         </div>
@@ -70,7 +70,7 @@ export default function RegisterPage() {
             placeholder="nama@del.ac.id"
             value={email.value}
             onChange={email.onChange}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
           />
           {errors.email && <p className="mt-2 text-sm font-medium text-red-500">{errors.email}</p>}
         </div>
@@ -86,7 +86,7 @@ export default function RegisterPage() {
               autoComplete="new-password"
               value={password.value}
               onChange={password.onChange}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
             />
             {errors.password && <p className="mt-2 text-sm font-medium text-red-500">{errors.password}</p>}
           </div>
@@ -101,7 +101,7 @@ export default function RegisterPage() {
               autoComplete="new-password"
               value={confirm.value}
               onChange={confirm.onChange}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
             />
             {errors.confirm && <p className="mt-2 text-sm font-medium text-red-500">{errors.confirm}</p>}
           </div>
@@ -111,11 +111,11 @@ export default function RegisterPage() {
           id="register-submit-button"
           type="submit"
           disabled={submitting}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 hover:shadow disabled:opacity-70"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-teal-700 hover:shadow disabled:opacity-70"
         >
           {submitting ? (
             <>
-              <IconLoader2 size={20} className="animate-spin" /> Memproses…
+              <IconLoader2 size={20} className="animate-spin" /> Memprosesâ€¦
             </>
           ) : (
             <>
@@ -127,7 +127,7 @@ export default function RegisterPage() {
 
       <p className="mt-8 text-center text-sm font-medium text-slate-500 lg:text-left">
         Sudah punya akun?{" "}
-        <Link to="/auth/login" className="text-blue-600 hover:text-blue-700 hover:underline">
+        <Link to="/auth/login" className="text-teal-600 hover:text-teal-700 hover:underline">
           Masuk di sini
         </Link>
       </p>
