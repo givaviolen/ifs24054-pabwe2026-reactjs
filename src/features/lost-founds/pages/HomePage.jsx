@@ -17,7 +17,7 @@ const SCOPE_OPTIONS = [["all", "Semua laporan"], ["mine", "Laporan saya"]];
 function StatTile({ label, value, tone }) {
   return (
     <div className="flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-      <p className="text-sm font-semibold text-slate-500">{label}</p>
+      <p className="text-sm font-semibold text-slate-600">{label}</p>
       <p className={`mt-2 font-sans text-4xl font-extrabold tracking-tight ${tone}`}>{value}</p>
     </div>
   );
@@ -75,12 +75,12 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">
             {showingStats ? "Statistik laporan" : "Daftar laporan"}
           </h2>
-          <p className="mt-1 text-slate-500">Pantau barang hilang dan temuan di sekitar kampus.</p>
+          <p className="mt-1 text-slate-600">Pantau barang hilang dan temuan di sekitar kampus.</p>
         </div>
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="flex items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-teal-600/20 transition hover:bg-teal-700 hover:shadow-lg"
+          className="flex items-center gap-2 rounded-xl bg-teal-700 px-5 py-3 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg"
         >
           <IconPlus size={20} /> Buat laporan
         </button>
@@ -99,11 +99,11 @@ export default function HomePage() {
         <>
           <div className="space-y-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
             <div className="relative">
-              <IconSearch size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <IconSearch size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
               <input
                 type="search"
                 aria-label="Cari laporan"
-                placeholder="Cari judul atau deskripsi…"
+                placeholder="Cari judul atau deskripsiâ€¦"
                 value={keyword.value}
                 onChange={keyword.onChange}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-slate-900 outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
@@ -117,14 +117,14 @@ export default function HomePage() {
           </div>
 
           {isLostFound && (
-            <p role="status" className="flex items-center justify-center gap-2 py-10 text-slate-500">
-              <IconLoader2 className="animate-spin" /> Memuat laporan…
+            <p role="status" className="flex items-center justify-center gap-2 py-10 text-slate-600">
+              <IconLoader2 className="animate-spin" /> Memuat laporanâ€¦
             </p>
           )}
 
           {!isLostFound && visible.length === 0 && (
-            <div className="grid place-items-center gap-2 rounded-3xl border-2 border-dashed border-slate-300 py-16 text-slate-500 bg-slate-50/50">
-              <IconInbox size={40} className="text-slate-400" />
+            <div className="grid place-items-center gap-2 rounded-3xl border-2 border-dashed border-slate-300 py-16 text-slate-600 bg-slate-50/50">
+              <IconInbox size={40} className="text-slate-500" />
               <p className="font-semibold">Tidak ada laporan yang cocok.</p>
             </div>
           )}

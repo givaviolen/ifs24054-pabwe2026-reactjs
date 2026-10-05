@@ -24,7 +24,7 @@ export default function ItemCard({ item, onToggleDone, onDelete }) {
         {cover ? (
           <img src={cover} alt={`Cover ${item.title}`} className="size-full object-cover" />
         ) : (
-          <span className="grid size-full place-items-center text-slate-300">
+          <span className="grid size-full place-items-center text-slate-400">
             <IconPackage size={44} />
           </span>
         )}
@@ -40,8 +40,8 @@ export default function ItemCard({ item, onToggleDone, onDelete }) {
 
       <div className="flex flex-1 flex-col p-5">
         <h3 className="line-clamp-1 text-lg font-bold text-slate-900">{item.title}</h3>
-        <p className="mt-1 line-clamp-2 flex-1 text-sm leading-relaxed text-slate-500">{item.description}</p>
-        <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-slate-400">
+        <p className="mt-1 line-clamp-2 flex-1 text-sm leading-relaxed text-slate-600">{item.description}</p>
+        <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-slate-600">
           <IconCalendar size={14} /> {formatDate(item.created_at)}
         </p>
 

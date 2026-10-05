@@ -52,7 +52,7 @@ export default function NavbarComponent({ onOpenMenu }) {
           <span className="hidden max-w-32 truncate text-sm font-bold text-slate-700 sm:block">
             {profile.name}
           </span>
-          <IconChevronDown size={16} className="text-slate-400" />
+          <IconChevronDown size={16} className="text-slate-500" />
         </button>
 
         {dropdownOpen && (
@@ -62,7 +62,7 @@ export default function NavbarComponent({ onOpenMenu }) {
           >
             <div className="px-3 py-2">
               <p className="truncate text-sm font-bold text-slate-900">{profile.name}</p>
-              <p className="truncate text-xs text-slate-500">{profile.email}</p>
+              <p className="truncate text-xs text-slate-600">{profile.email}</p>
             </div>
             <Link
               role="menuitem"

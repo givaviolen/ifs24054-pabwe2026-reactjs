@@ -3,8 +3,6 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import process from "process";
 
-// Menyisipkan CSS hasil build ke <style> di index.html sehingga tidak ada
-// request CSS yang memblokir render (Render blocking requests).
 const inlineCss = () => ({
   name: "inline-css",
   apply: "build",
@@ -25,8 +23,6 @@ const inlineCss = () => ({
   },
 });
 
-// Meneruskan /api-proxy/* ke API Delcom saat dev & preview lokal
-// (di Netlify, ini dikerjakan oleh public/_redirects).
 const apiProxy = {
   "/api-proxy": {
     target: "https://open-api.delcom.org",
@@ -35,7 +31,6 @@ const apiProxy = {
   },
 };
 
-// https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const port = Number(env.APP_PORT) || 3000;
@@ -48,6 +43,17 @@ export default defineConfig(({ mode }) => {
       DELCOM_BASEURL: JSON.stringify(
         env.VITE_DELCOM_BASEURL || "https://open-api.delcom.org/api/v1"
       ),
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            redux: ['@reduxjs/toolkit', 'react-redux'],
+            ui: ['@tabler/icons-react', 'sweetalert2']
+          }
+        }
+      }
     },
     test: {
       globals: true,

@@ -54,13 +54,13 @@ export default function SidebarComponent({ open, onClose }) {
             type="button"
             aria-label="Tutup menu"
             onClick={onClose}
-            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 lg:hidden"
+            className="rounded-full p-1.5 text-slate-600 hover:bg-slate-100 lg:hidden"
           >
             <IconX size={20} />
           </button>
         </div>
 
-        <p className="mb-3 px-3 text-xs font-bold uppercase tracking-widest text-slate-400">Menu</p>
+        <p className="mb-3 px-3 text-xs font-bold uppercase tracking-widest text-slate-600">Menu</p>
         <nav className="flex flex-col gap-1">
           {MENU.map(({ id, to, label, icon: Icon }) => (
             <Link
