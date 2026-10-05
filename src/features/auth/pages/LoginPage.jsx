@@ -87,7 +87,7 @@ export default function LoginPage() {
         >
           {submitting ? (
             <>
-              <IconLoader2 size={20} className="animate-spin" /> Memproses…
+              <IconLoader2 size={20} className="animate-spin" /> Memprosesâ€¦
             </>
           ) : (
             <>
