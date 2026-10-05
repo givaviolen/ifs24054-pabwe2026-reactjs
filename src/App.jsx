@@ -12,9 +12,9 @@ const ProfilePage = lazy(() => import("./features/users/pages/ProfilePage"));
 
 function Fallback() {
   return (
-    <div className="flex h-screen w-screen items-center justify-center bg-slate-50 text-slate-500">
-      <p className="font-semibold animate-pulse">Memuat halaman...</p>
-    </div>
+    <main className="flex h-screen w-screen items-center justify-center bg-slate-50 text-slate-500">
+      <h1 className="font-semibold animate-pulse">Memuat halaman...</h1>
+    </main>
   );
 }
 

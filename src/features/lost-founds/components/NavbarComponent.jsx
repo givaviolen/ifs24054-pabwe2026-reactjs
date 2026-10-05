@@ -76,7 +76,7 @@ export default function NavbarComponent({ onOpenMenu }) {
               type="button"
               role="menuitem"
               onClick={signOut}
-              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50"
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50"
             >
               <IconLogout size={18} /> Keluar
             </button>

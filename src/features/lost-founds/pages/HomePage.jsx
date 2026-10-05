@@ -72,10 +72,9 @@ export default function HomePage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             {showingStats ? "Statistik laporan" : "Daftar laporan"}
-          </h2>
-          <p className="mt-1 text-slate-600">Pantau barang hilang dan temuan di sekitar kampus.</p>
+          </h1><p className="mt-1 text-slate-600">Pantau barang hilang dan temuan di sekitar kampus.</p>
         </div>
         <button
           type="button"
@@ -103,7 +102,7 @@ export default function HomePage() {
               <input
                 type="search"
                 aria-label="Cari laporan"
-                placeholder="Cari judul atau deskripsiâ€¦"
+                placeholder="Cari judul atau deskripsiÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦"
                 value={keyword.value}
                 onChange={keyword.onChange}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-slate-900 outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
@@ -118,7 +117,7 @@ export default function HomePage() {
 
           {isLostFound && (
             <p role="status" className="flex items-center justify-center gap-2 py-10 text-slate-600">
-              <IconLoader2 className="animate-spin" /> Memuat laporanâ€¦
+              <IconLoader2 className="animate-spin" /> Memuat laporanÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦
             </p>
           )}
 

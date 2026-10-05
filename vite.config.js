@@ -44,20 +44,6 @@ export default defineConfig(({ mode }) => {
         env.VITE_DELCOM_BASEURL || "https://open-api.delcom.org/api/v1"
       ),
     },
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) return 'vendor';
-              if (id.includes('@reduxjs/toolkit') || id.includes('react-redux')) return 'redux';
-              if (id.includes('@tabler/icons-react') || id.includes('sweetalert2')) return 'ui';
-              return 'vendor-other';
-            }
-          }
-        }
-      }
-    },
     test: {
       globals: true,
       environment: "jsdom",
