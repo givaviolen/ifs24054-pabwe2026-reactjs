@@ -22,7 +22,7 @@ export default function ItemCard({ item, onToggleDone, onDelete }) {
     <article className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-teal-900/5">
       <div className="relative h-44 bg-slate-100">
         {cover ? (
-          <img src={cover} alt={`Cover ${item.title}`} className="size-full object-cover" />
+          <img src={cover} alt={`Cover ${item.title}`} className="size-full object-cover" width="400" height="300" />
         ) : (
           <span className="grid size-full place-items-center text-slate-400">
             <IconPackage size={44} />

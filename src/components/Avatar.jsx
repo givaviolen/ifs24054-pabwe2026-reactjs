@@ -5,7 +5,7 @@ export default function Avatar({ name, photo, className }) {
   const src = resolveMediaUrl(photo);
   const base = "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full";
   return src ? (
-    <img src={src} alt={`Foto ${name}`} className={clsx(base, "object-cover", className)} />
+    <img src={src} alt={`Foto ${name}`} className={clsx(base, "object-cover", className)} width="40" height="40" />
   ) : (
     <span
       aria-label={`Inisial ${name}`}
