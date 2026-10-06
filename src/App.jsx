@@ -1,9 +1,14 @@
 import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import AuthLayout from "./features/auth/layouts/AuthLayout";
+
+// Eager: halaman utama (route "/") dimuat langsung supaya rantai request
+// tetap pendek (HTML -> index.js) dan First Paint tidak tertunda.
 import LostFoundLayout from "./features/lost-founds/layouts/LostFoundLayout";
 import HomePage from "./features/lost-founds/pages/HomePage";
 
+// Lazy: semua yang tidak dibutuhkan saat halaman utama pertama kali dibuka
+// dipisah jadi chunk sendiri, sehingga tidak ikut terunduh di bundle utama.
+const AuthLayout = lazy(() => import("./features/auth/layouts/AuthLayout"));
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
 const DetailPage = lazy(() => import("./features/lost-founds/pages/DetailPage"));
@@ -20,21 +25,23 @@ function Fallback() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/auth" element={<AuthLayout />}>
-        <Route index element={<Navigate to="login" replace />} />
-        <Route path="login" element={<Suspense fallback={<Fallback />}><LoginPage /></Suspense>} />
-        <Route path="register" element={<Suspense fallback={<Fallback />}><RegisterPage /></Suspense>} />
-      </Route>
+    <Suspense fallback={<Fallback />}>
+      <Routes>
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route index element={<Navigate to="login" replace />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+        </Route>
 
-      <Route path="/" element={<LostFoundLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="lost-founds/:id" element={<Suspense fallback={<Fallback />}><DetailPage /></Suspense>} />
-        <Route path="users" element={<Suspense fallback={<Fallback />}><UsersPage /></Suspense>} />
-        <Route path="profile" element={<Suspense fallback={<Fallback />}><ProfilePage /></Suspense>} />
-      </Route>
+        <Route path="/" element={<LostFoundLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="lost-founds/:id" element={<DetailPage />} />
+          <Route path="users" element={<UsersPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
