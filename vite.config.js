@@ -3,8 +3,8 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import process from "process";
 
-// Menyisipkan CSS langsung ke index.html sebagai <style>,
-// sehingga tidak ada request CSS terpisah (memperpendek critical request chain).
+// Menyisipkan CSS hasil build ke <style> di index.html sehingga tidak ada
+// request CSS yang memblokir render (Render blocking requests).
 const inlineCss = () => ({
   name: "inline-css",
   apply: "build",
@@ -25,6 +25,8 @@ const inlineCss = () => ({
   },
 });
 
+// Meneruskan /api-proxy/* ke API Delcom saat dev & preview lokal
+// (di Netlify, ini dikerjakan oleh public/_redirects).
 const apiProxy = {
   "/api-proxy": {
     target: "https://open-api.delcom.org",
@@ -33,13 +35,7 @@ const apiProxy = {
   },
 };
 
-// Library inti React dipisah ke chunk sendiri:
-// - bundle utama (index-*.js) jadi lebih kecil, sehingga "unused JS" per file turun
-// - vendor di-cache browser terpisah dan tidak diunduh ulang saat kode aplikasi berubah
-// - Vite otomatis menambahkan <link rel="modulepreload"> untuk chunk ini,
-//   jadi diunduh paralel dengan bundle utama (tidak membuat rantai baru)
-const REACT_VENDOR = /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/;
-
+// https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const port = Number(env.APP_PORT) || 3000;
@@ -52,18 +48,6 @@ export default defineConfig(({ mode }) => {
       DELCOM_BASEURL: JSON.stringify(
         env.VITE_DELCOM_BASEURL || "https://open-api.delcom.org/api/v1"
       ),
-    },
-    build: {
-      target: "esnext", // browser modern: tidak perlu polyfill/transpile berlebih
-      cssCodeSplit: false, // satu file CSS saja, mudah di-inline
-      chunkSizeWarningLimit: 600,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (REACT_VENDOR.test(id)) return "vendor-react";
-          },
-        },
-      },
     },
     test: {
       globals: true,
