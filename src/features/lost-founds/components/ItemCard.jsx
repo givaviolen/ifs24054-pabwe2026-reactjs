@@ -39,7 +39,7 @@ export default function ItemCard({ item, onToggleDone, onDelete }) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="line-clamp-1 text-lg font-bold text-slate-900">{item.title}</h3>
+        <h2 className="line-clamp-1 text-lg font-bold text-slate-900">{item.title}</h2>
         <p className="mt-1 line-clamp-2 flex-1 text-sm leading-relaxed text-slate-600">{item.description}</p>
         <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-slate-600">
           <IconCalendar size={14} /> {formatDate(item.created_at)}
