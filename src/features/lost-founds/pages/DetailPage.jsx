@@ -40,7 +40,7 @@ export default function DetailPage() {
       <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
         <div className="grid place-items-center overflow-hidden rounded-[2rem] bg-stone-200 ring-1 ring-stone-200">
           {cover ? (
-            <img src={cover} alt={`Cover ${item.title}`} className="h-auto max-h-[30rem] w-full object-contain" width="800" height="480" />
+            <img src={cover} alt={`Cover ${item.title}`} className="h-auto max-h-[30rem] w-full object-contain" />
           ) : (
             <p className="py-32 text-sm font-semibold text-stone-600">Belum ada foto cover</p>
           )}

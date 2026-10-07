@@ -25,7 +25,7 @@ const ITEMS = [
   make(4, { title: "Payung", is_completed: 1 }),
 ];
 
-const cardTitles = () => screen.queryAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+const cardTitles = () => screen.queryAllByRole("heading", { level: 3 }).map((h) => h.textContent);
 
 beforeEach(() => {
   vi.clearAllMocks();

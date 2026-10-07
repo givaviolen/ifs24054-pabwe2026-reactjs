@@ -25,19 +25,19 @@ beforeEach(() => {
 });
 
 describe("App routing", () => {
-  it("tamu yang membuka / diarahkan ke halaman login", async () => {
+  it("tamu yang membuka / diarahkan ke halaman login", () => {
     renderWithProviders(<App />);
-    expect(await screen.findByRole("heading", { name: "Masuk" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Masuk" })).toBeInTheDocument();
   });
 
-  it("/auth otomatis ke /auth/login", async () => {
+  it("/auth otomatis ke /auth/login", () => {
     renderWithProviders(<App />, { route: "/auth" });
-    expect(await screen.findByRole("heading", { name: "Masuk" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Masuk" })).toBeInTheDocument();
   });
 
-  it("/auth/register menampilkan form pendaftaran", async () => {
+  it("/auth/register menampilkan form pendaftaran", () => {
     renderWithProviders(<App />, { route: "/auth/register" });
-    expect(await screen.findByRole("heading", { name: "Buat akun" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Buat akun" })).toBeInTheDocument();
   });
 
   it("pengguna login melihat dashboard di /", async () => {

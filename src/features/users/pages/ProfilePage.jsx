@@ -23,7 +23,7 @@ const Field = ({ id, label, error, ...props }) => (
   <div>
     <label htmlFor={id} className="mb-1.5 block text-sm font-bold text-stone-700">{label}</label>
     <input id={id} className={FIELD} {...props} />
-    {error && <p className="mt-1.5 text-sm font-medium text-rose-700">{error}</p>}
+    {error && <p className="mt-1.5 text-sm font-medium text-rose-600">{error}</p>}
   </div>
 );
 
