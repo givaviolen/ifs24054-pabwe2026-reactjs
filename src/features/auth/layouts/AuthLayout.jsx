@@ -1,63 +1,50 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { IconBackpack, IconCircleCheck, IconMapPinSearch } from "@tabler/icons-react";
-
-const SAMPLE_TICKETS = [
-  { label: "Hilang", text: "Dompet kulit cokelat di Gedung 9", tone: "bg-rose-400/20 text-rose-200" },
-  { label: "Ditemukan", text: "Kunci motor di kantin", tone: "bg-emerald-400/20 text-emerald-200" },
-  { label: "Selesai", text: "Botol minum kembali ke pemilik", tone: "bg-amber-300/20 text-amber-200" },
-];
+import { IconSearch, IconShieldCheck } from "@tabler/icons-react";
 
 export default function AuthLayout() {
   const token = useSelector((state) => state.auth.token);
   if (token) return <Navigate to="/" replace />;
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
-      <aside className="relative hidden overflow-hidden bg-indigo-950 p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="absolute -right-24 -top-24 size-80 rounded-full bg-amber-300/20 blur-2xl" />
-        <div className="absolute -bottom-32 -left-16 size-96 rounded-full bg-indigo-500/30 blur-3xl" />
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+      <div className="flex w-full max-w-5xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl ring-1 ring-slate-200">
+        {/* Left Panel - Banner */}
+        <aside className="relative hidden w-1/2 flex-col justify-between bg-teal-700 p-12 text-white lg:flex">
+          <div className="absolute -left-12 -top-12 size-64 rounded-full bg-teal-500/40 blur-3xl" />
+          <div className="absolute -bottom-16 -right-16 size-80 rounded-full bg-emerald-400/30 blur-3xl" />
 
-        <div className="relative flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-2xl bg-amber-300 text-indigo-950">
-            <IconMapPinSearch size={24} />
-          </span>
-          <span className="font-display text-2xl font-extrabold">
-            Temu<span className="text-amber-300">Balik</span>
-          </span>
-        </div>
+          <div className="relative flex items-center gap-3">
+            <span className="grid size-12 place-items-center rounded-2xl bg-white text-teal-700 shadow-sm">
+              <IconSearch size={28} />
+            </span>
+            <span className="font-sans text-2xl font-bold tracking-tight">
+              TemuBalik
+            </span>
+          </div>
 
-        <div className="relative">
-          <IconBackpack size={44} className="mb-5 text-amber-300" />
-          <h2 className="font-display text-4xl font-extrabold leading-tight">
-            Barang hilang? <br />
-            <span className="text-amber-300">Biar kampus yang bantu cari.</span>
-          </h2>
-          <ul className="mt-8 space-y-3">
-            {SAMPLE_TICKETS.map((ticket) => (
-              <li
-                key={ticket.label}
-                className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10"
-              >
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${ticket.tone}`}>
-                  {ticket.label}
-                </span>
-                <span className="text-sm text-indigo-100">{ticket.text}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <div className="relative">
+            <h2 className="text-4xl font-extrabold leading-snug tracking-tight">
+              Barang hilang? <br />
+              <span className="text-teal-200">Biar kampus yang bantu cari.</span>
+            </h2>
+            <p className="mt-6 text-lg text-teal-100">
+              Platform pelaporan barang hilang dan ditemukan terpusat untuk mahasiswa dan staf.
+            </p>
+          </div>
 
-        <p className="relative flex items-center gap-2 text-sm text-indigo-200">
-          <IconCircleCheck size={18} className="text-amber-300" /> Dibuat untuk praktikum PABWE 2026
-        </p>
-      </aside>
+          <p className="relative flex items-center gap-2 text-sm font-medium text-teal-200">
+            <IconShieldCheck size={20} /> Dibuat untuk praktikum PABWE 2026
+          </p>
+        </aside>
 
-      <main className="flex items-center justify-center bg-stone-100 px-5 py-10">
-        <div className="w-full max-w-md">
-          <Outlet />
-        </div>
-      </main>
+        {/* Right Panel - Form */}
+        <main className="flex w-full items-center justify-center p-8 lg:w-1/2 lg:p-16">
+          <div className="w-full max-w-md">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

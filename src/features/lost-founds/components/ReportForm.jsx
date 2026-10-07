@@ -58,7 +58,7 @@ export default function ReportForm({ initial = BLANK, withCompleted = false, bus
           Judul
         </label>
         <input id="report-title" className={FIELD} value={title.value} onChange={title.onChange} />
-        {errors.title && <p className="mt-1.5 text-sm font-medium text-rose-600">{errors.title}</p>}
+        {errors.title && <p className="mt-1.5 text-sm font-medium text-rose-700">{errors.title}</p>}
       </div>
 
       <div>
@@ -73,7 +73,7 @@ export default function ReportForm({ initial = BLANK, withCompleted = false, bus
           onChange={description.onChange}
         />
         {errors.description && (
-          <p className="mt-1.5 text-sm font-medium text-rose-600">{errors.description}</p>
+          <p className="mt-1.5 text-sm font-medium text-rose-700">{errors.description}</p>
         )}
       </div>
 
